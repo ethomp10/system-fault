@@ -54,8 +54,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4879217779831878}
   - component: {fileID: 205359728895265720}
-  - component: {fileID: 114701851049312680}
   - component: {fileID: 136438840505860774}
+  - component: {fileID: 114701851049312680}
   - component: {fileID: 114253221091836122}
   m_Layer: 10
   m_Name: TreePurple

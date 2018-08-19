@@ -37,8 +37,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4458835909096040}
   - component: {fileID: 205302383942380736}
-  - component: {fileID: 114029736175720646}
   - component: {fileID: 136566532239569412}
+  - component: {fileID: 114029736175720646}
   - component: {fileID: 114168219203226326}
   m_Layer: 10
   m_Name: TreeOrange

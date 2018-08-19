@@ -37,8 +37,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4544813919061570}
   - component: {fileID: 205654462371876744}
-  - component: {fileID: 114204561611318396}
   - component: {fileID: 136127527176564592}
+  - component: {fileID: 114204561611318396}
   - component: {fileID: 114263042816208520}
   m_Layer: 10
   m_Name: TreeRed

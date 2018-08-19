@@ -71,8 +71,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4366732023533006}
   - component: {fileID: 205870965492325372}
-  - component: {fileID: 114846070139571918}
   - component: {fileID: 136976153759864266}
+  - component: {fileID: 114846070139571918}
   - component: {fileID: 114734060074046344}
   m_Layer: 10
   m_Name: TreeYellow
