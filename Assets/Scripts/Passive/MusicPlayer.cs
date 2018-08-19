@@ -13,7 +13,7 @@
 public class MusicPlayer : MonoBehaviour {
 
     [SerializeField] float maxVolume = 0.5f;
-    [SerializeField] float fadeSpeed = 0.2f;
+    [SerializeField] float fadeSpeed = 0.1f;
 
     AudioSource source;
     int fadeDirection = 0;
