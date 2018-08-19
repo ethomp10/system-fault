@@ -22,6 +22,7 @@ public class Ship : MonoBehaviour, IControllable, IUsable, IPowerable {
     [Header("Flight")]
     [SerializeField] float yawMultiplier = 0.5f;
     [SerializeField] float astroThrottleSensitivity = 0.5f;
+    [SerializeField] float maximumSpeed = 300f;
 
     [Header("Camera")]
     [SerializeField] Transform playerExit;
@@ -107,12 +108,12 @@ public class Ship : MonoBehaviour, IControllable, IUsable, IPowerable {
                         switch (assistMode) {
                             case GameTypes.AssistMode.NoAssist:
                             case GameTypes.AssistMode.Astro:
-                                boosters.PassInput(controlObject.rightLeft, controlObject.upDown, torque);
+                                boosters.SetThrottle(controlObject.rightLeft, controlObject.upDown, torque);
                                 fuelPack.DrainFuel((Mathf.Abs(controlObject.rightLeft) + Mathf.Abs(controlObject.upDown)) / boosters.efficiency * Time.deltaTime);
                                 if (assistMode == GameTypes.AssistMode.Astro) fuelPack.DrainFuel(1f / thrusters.efficiency * Time.deltaTime); // Idle burn rate
                                 break;
                             case GameTypes.AssistMode.Hover:
-                                boosters.PassInput(controlObject.rightLeft / 2f, controlObject.upDown / 2f, torque);
+                                boosters.SetThrottle(controlObject.rightLeft / 2f, controlObject.upDown / 2f, torque);
                                 fuelPack.DrainFuel((Mathf.Abs(controlObject.rightLeft)/2f + Mathf.Abs(controlObject.upDown))/2f / boosters.efficiency * Time.deltaTime);
                                 fuelPack.DrainFuel(1f / boosters.efficiency * Time.deltaTime); // Idle burn rate
                                 break;
@@ -198,6 +199,8 @@ public class Ship : MonoBehaviour, IControllable, IUsable, IPowerable {
             default:
                 break;
         }
+
+        rb.velocity = Vector3.ClampMagnitude(rb.velocity, maximumSpeed);
     }
 
     void ChangeAssistMode(GameTypes.AssistMode mode) {
@@ -224,6 +227,8 @@ public class Ship : MonoBehaviour, IControllable, IUsable, IPowerable {
             case GameTypes.AssistMode.Quantum:
                 break;
         }
+
+        if (thrusters && mode != GameTypes.AssistMode.Astro) thrusters.SetThrottle(Input.GetAxis("Move Forward/Back"));
 
         shipComputer.ChangeAssistMode(mode);
         assistMode = mode;

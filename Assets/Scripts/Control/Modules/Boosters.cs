@@ -41,7 +41,7 @@ public class Boosters : ShipModule, IPowerable {
         }
     }
 
-    public void PassInput(float horizontal, float vertical, Vector3 torque) {
+    public void SetThrottle(float horizontal, float vertical, Vector3 torque) {
         throttleHorizontal = horizontal;
         throttleVertical = vertical;
         throttleTorque = Vector3.ClampMagnitude(torque, 1f);
@@ -51,7 +51,6 @@ public class Boosters : ShipModule, IPowerable {
         throttleHorizontal = 0f;
         throttleVertical = 0f;
         throttleTorque = Vector3.zero;
-        ToggleTrails(false);
     }
 
     void Boost() {

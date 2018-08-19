@@ -27,7 +27,7 @@ public class ShipComputer : MonoBehaviour, IPowerable {
 
     Color activeColour = new Color(0f, 130f/255f, 1f, 1f);
     Color inactiveColour = new Color(120f/255f, 120f/255f, 120f/255f, 1f);
-    Color throttleColour = new Color(0f, 1f, 0f, 1f);
+    Color throttleColour = new Color(0f, 220/255f, 0f, 1f);
     Color warningColour = new Color(1f, 0f, 0f, 1f);
 
 
@@ -48,7 +48,7 @@ public class ShipComputer : MonoBehaviour, IPowerable {
     public void UpdateSpeedometer(float speed, bool reverse) {
         speedometer.text = speed.ToString("F0");
         if (reverse) speedometer.color = warningColour;
-        else speedometer.color = activeColour;
+        else speedometer.color = throttleColour;
     }
 
     public void TogglePower(bool toggle) {
