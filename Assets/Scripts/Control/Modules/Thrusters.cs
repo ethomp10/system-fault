@@ -53,6 +53,10 @@ public class Thrusters : ShipModule, IPowerable {
         astroThrottle = Mathf.Clamp(astroThrottle, -0.5f, 1f);
     }
 
+    public float GetThrottle() {
+        return throttle;
+    }
+
     public float GetAstroThrottle() {
         return astroThrottle;
     }

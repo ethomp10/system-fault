@@ -84,13 +84,13 @@ public class Ship : MonoBehaviour, IControllable, IUsable, IPowerable {
                         switch (assistMode) {
                             case GameTypes.AssistMode.NoAssist:
                                 thrusters.SetThrottle(controlObject.forwardBack);
-                                shipComputer.UpdateThrottleGauge(controlObject.forwardBack);
-                                fuelPack.DrainFuel(Mathf.Abs(controlObject.forwardBack) / thrusters.efficiency * Time.deltaTime);
+                                shipComputer.UpdateThrottleGauge(thrusters.GetThrottle());
+                                fuelPack.DrainFuel(Mathf.Abs(thrusters.GetThrottle()) / thrusters.efficiency * Time.deltaTime);
                                 break;
                             case GameTypes.AssistMode.Hover:
                                 thrusters.SetThrottle(controlObject.forwardBack/2f);
-                                shipComputer.UpdateThrottleGauge(controlObject.forwardBack/2f);
-                                fuelPack.DrainFuel(Mathf.Abs(controlObject.forwardBack)/2f / thrusters.efficiency * Time.deltaTime);
+                                shipComputer.UpdateThrottleGauge(thrusters.GetThrottle());
+                                fuelPack.DrainFuel(Mathf.Abs(thrusters.GetThrottle() / thrusters.efficiency * Time.deltaTime));
                                 break;
                             case GameTypes.AssistMode.Astro:
                                 thrusters.AdjustAstroThrottle(controlObject.forwardBack * astroThrottleSensitivity * Time.deltaTime);
@@ -129,7 +129,6 @@ public class Ship : MonoBehaviour, IControllable, IUsable, IPowerable {
                     if (assistMode == GameTypes.AssistMode.NoAssist) ChangeAssistMode(previousAssistMode);
                     else if (assistMode == GameTypes.AssistMode.Hover && boosters && thrusters) ChangeAssistMode(GameTypes.AssistMode.Astro);
                     else if ((assistMode == GameTypes.AssistMode.Astro)) ChangeAssistMode(GameTypes.AssistMode.Hover);
-                    
                 }
                 if (controlObject.toggleAssist) {
                     if (assistMode != GameTypes.AssistMode.NoAssist) {
