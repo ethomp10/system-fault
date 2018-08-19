@@ -37,8 +37,8 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1103038458942422}
-  m_LocalRotation: {x: 0.92844504, y: -0.15244927, z: -0.33392438, w: -0.056951933}
-  m_LocalPosition: {x: -299.94, y: 57.13, z: -397.42}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -59,9 +59,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RenderingLayerMask: 4294967295
   m_Materials:
-  - {fileID: 2100002, guid: cd811a82754cafd41a44b2b626f56de0, type: 3}
-  - {fileID: 2100010, guid: cd811a82754cafd41a44b2b626f56de0, type: 3}
-  - {fileID: 2100006, guid: cd811a82754cafd41a44b2b626f56de0, type: 3}
+  - {fileID: 2100000, guid: 47e76139f8a743a479871152357ad14f, type: 2}
+  - {fileID: 2100000, guid: b43751fb8d810884da2bced69096bdd5, type: 2}
+  - {fileID: 2100000, guid: 196ea116280e07c47af39128ebf55eed, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -132,5 +132,5 @@ MonoBehaviour:
   mass: 0
   connected: 0
   shipRB: {fileID: 0}
-  maxFuel: 500
+  maxFuel: 1000
   maxCells: 4

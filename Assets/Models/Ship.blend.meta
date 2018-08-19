@@ -13,6 +13,7 @@ ModelImporter:
     100014: Thrusters
     100016: Boosters
     100018: LandingGear
+    100020: Light
     400000: //RootNode
     400002: Canopy
     400004: Ship
@@ -23,12 +24,14 @@ ModelImporter:
     400014: Thrusters
     400016: Boosters
     400018: LandingGear
+    400020: Light
     2100000: RedPaint
     2100002: Metal
     2100004: Cushion
     2100006: Screen
     2100008: Glass
     2100010: Rubber
+    2100012: Intake
     2300000: //RootNode
     2300002: Canopy
     2300004: Ship
@@ -58,10 +61,12 @@ ModelImporter:
     4300012: Thrusters
     4300014: Boosters
     4300016: LandingGear
+    4300018: Light
     7400000: Default Take
     9500000: //RootNode
     13700000: LandingGear
     13700002: Body
+    13700004: Light
     2186277476908879412: ImportLogs
   externalObjects: {}
   materials:

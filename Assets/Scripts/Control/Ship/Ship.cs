@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections;
-using UnityEngine.UI;
 
 //
 // Ship.cs
@@ -11,7 +10,7 @@ using UnityEngine.UI;
 
 [RequireComponent(typeof(Rigidbody))]
 
-public class Ship : MonoBehaviour, IControllable, IUsable {
+public class Ship : MonoBehaviour, IControllable, IUsable, IPowerable {
 
     ModuleSlot[] moduleSlots;
     FuelPack fuelPack = null;
@@ -20,23 +19,24 @@ public class Ship : MonoBehaviour, IControllable, IUsable {
 
     LandingGear landingGear;
 
+    [Header("Flight")]
     [SerializeField] float yawMultiplier = 0.5f;
     [SerializeField] float astroThrottleSensitivity = 0.5f;
-    [SerializeField] float cameraSensitivity = 1f;
 
-    [SerializeField] Transform cameraRig;
-    [SerializeField] float cameraResetSpeed = 1f;
+    [Header("Camera")]
     [SerializeField] Transform playerExit;
+    [SerializeField] Transform cameraRig;
+    [SerializeField] float cameraSensitivity = 1f;
+    [SerializeField] float cameraResetSpeed = 1f;
 
-    [SerializeField] Image throttleGauge;
-    [SerializeField] Image fuelGauge;
-    Color throttleColour = new Color(0f, 1f, 0f, 130f/255f);
-    Color fuelColour = new Color(0f, 180f/255f, 1f, 130f/255f);
-    Color warningColour = new Color(1f, 0f, 0f, 130f / 255f);
+    ShipComputer shipComputer;
+    ShipLight shipLight;
 
+    ParticleSystem spaceParticles;
 
     bool powered = false;
     bool busy = false;
+    bool lightOn = false;
 
     bool freeLook = false;
 
@@ -51,13 +51,21 @@ public class Ship : MonoBehaviour, IControllable, IUsable {
         moduleSlots = GetComponentsInChildren<ModuleSlot>();
         ToggleModuleSlots(false);
 
+        rb = GetComponent<Rigidbody>();
+
         landingGear = GetComponentInChildren<LandingGear>();
         if (!landingGear) Debug.LogError("Ship: No landing gear set as child");
-
-        rb = GetComponent<Rigidbody>();
+        shipComputer = GetComponentInChildren<ShipComputer>();
+        if (!landingGear) Debug.LogError("Ship: No ship computer set as child");
+        shipLight = GetComponentInChildren<ShipLight>();
+        if (!landingGear) Debug.LogError("Ship: No ship light set as child");
+        spaceParticles = GetComponentInChildren<ParticleSystem>();
+        if (!spaceParticles) Debug.LogError("Ship: No space particles set as child");
 
         if (cameraRig == null) Debug.LogError("Ship: No camera rig set in inspector");
         if (playerExit == null) Debug.LogError("Ship: No player exit set in inspector");
+
+        shipComputer.TogglePower(false);
     }
 
     public void CheckInput(ControlObject controlObject) {
@@ -72,29 +80,48 @@ public class Ship : MonoBehaviour, IControllable, IUsable {
                 // Module Control
                 foreach (ModuleSlot slot in moduleSlots) {
                     if (thrusters) {
-                        if (assistMode == GameTypes.AssistMode.Astro) {
-                            UpdateThrottleGauge(thrusters.AdjustAstroThrottle(controlObject.forwardBack * astroThrottleSensitivity * Time.deltaTime));
-                            fuelPack.DrainFuel(thrusters.GetAstroFuel() * Time.deltaTime);
-                        } else {
-                            thrusters.SetThrottle(controlObject.forwardBack);
-                            UpdateThrottleGauge(controlObject.forwardBack);
-                            fuelPack.DrainFuel(Mathf.Abs(controlObject.forwardBack) / thrusters.efficiency * Time.deltaTime);
+                        switch (assistMode) {
+                            case GameTypes.AssistMode.NoAssist:
+                                thrusters.SetThrottle(controlObject.forwardBack);
+                                shipComputer.UpdateThrottleGauge(controlObject.forwardBack);
+                                fuelPack.DrainFuel(Mathf.Abs(controlObject.forwardBack) / thrusters.efficiency * Time.deltaTime);
+                                break;
+                            case GameTypes.AssistMode.Hover:
+                                thrusters.SetThrottle(controlObject.forwardBack/2f);
+                                shipComputer.UpdateThrottleGauge(controlObject.forwardBack/2f);
+                                fuelPack.DrainFuel(Mathf.Abs(controlObject.forwardBack)/2f / thrusters.efficiency * Time.deltaTime);
+                                break;
+                            case GameTypes.AssistMode.Astro:
+                                thrusters.AdjustAstroThrottle(controlObject.forwardBack * astroThrottleSensitivity * Time.deltaTime);
+                                shipComputer.UpdateThrottleGauge(thrusters.GetAstroThrottle());
+                                fuelPack.DrainFuel(thrusters.GetAstroFuel() * Time.deltaTime);
+                                break;
                         }
                     }
 
                     if (boosters) {
                         Vector3 torque;
-
                         if (!freeLook) torque = new Vector3(-controlObject.verticalLook, controlObject.horizontalLook * yawMultiplier, controlObject.roll);
                         else torque = new Vector3(0f, 0f, controlObject.roll);
-                        boosters.PassInput(controlObject.rightLeft, controlObject.upDown, torque);
 
-                        float totalBoost = Mathf.Abs(controlObject.rightLeft) + Mathf.Abs(controlObject.upDown);
-                        fuelPack.DrainFuel(totalBoost / boosters.efficiency * Time.deltaTime);
+                        switch (assistMode) {
+                            case GameTypes.AssistMode.NoAssist:
+                            case GameTypes.AssistMode.Astro:
+                                boosters.PassInput(controlObject.rightLeft, controlObject.upDown, torque);
+                                fuelPack.DrainFuel((Mathf.Abs(controlObject.rightLeft) + Mathf.Abs(controlObject.upDown)) / boosters.efficiency * Time.deltaTime);
+                                if (assistMode == GameTypes.AssistMode.Astro) fuelPack.DrainFuel(1f / thrusters.efficiency * Time.deltaTime); // Idle burn rate
+                                break;
+                            case GameTypes.AssistMode.Hover:
+                                boosters.PassInput(controlObject.rightLeft / 2f, controlObject.upDown / 2f, torque);
+                                fuelPack.DrainFuel((Mathf.Abs(controlObject.rightLeft)/2f + Mathf.Abs(controlObject.upDown))/2f / boosters.efficiency * Time.deltaTime);
+                                fuelPack.DrainFuel(1f / boosters.efficiency * Time.deltaTime); // Idle burn rate
+                                break;
+                        }
+                        
                     }
                 }
 
-                UpdateFuelGauge(fuelPack.GetFuelPercentage());
+                shipComputer.UpdateFuelGauge(fuelPack.GetFuelPercentage());
 
                 // Assist Modes
                 if (controlObject.changeAssist) {
@@ -109,6 +136,20 @@ public class Ship : MonoBehaviour, IControllable, IUsable {
                         ChangeAssistMode(GameTypes.AssistMode.NoAssist);
                     } else ChangeAssistMode(previousAssistMode);
                 }
+
+                // Speedometer
+                shipComputer.UpdateSpeedometer(rb.velocity.magnitude, transform.InverseTransformDirection(rb.velocity).z < -0.5f);
+
+                // Light
+                if (controlObject.light) {
+                    if (lightOn) {
+                        shipLight.TogglePower(false);
+                        lightOn = false;
+                    } else {
+                        shipLight.TogglePower(true);
+                        lightOn = true;
+                    }
+                }
             } else TogglePower(false);
         } else if (controlObject.interact && !busy) StartCoroutine("ExitShip");
 
@@ -117,7 +158,7 @@ public class Ship : MonoBehaviour, IControllable, IUsable {
             if (freeLook) freeLook = false;
             else freeLook = true;
         }
-        if (controlObject.changeCamera && !busy) PlayerCamera.instance.ToggleThirdPerson();
+        if (controlObject.changeCamera && !busy) PlayerCamera.instance.TogglePerspective();
 
         if (freeLook) FreeLook(controlObject.horizontalLook, controlObject.verticalLook);
         else ResetCameraRig();
@@ -163,16 +204,20 @@ public class Ship : MonoBehaviour, IControllable, IUsable {
         switch (mode) {
             case GameTypes.AssistMode.NoAssist:
                 rb.useGravity = true;
+                if (thrusters) thrusters.SetAstroThrottle(0f);
                 Debug.Log("Ship: Assist off");
                 break;
             case GameTypes.AssistMode.Hover:
                 rb.useGravity = false;
                 limitHoverSpeed = false;
+                if (thrusters) thrusters.SetAstroThrottle(0f);
                 landingGear.Extend();
                 Debug.Log("Ship: Hover Mode on");
                 break;
             case GameTypes.AssistMode.Astro:
                 rb.useGravity = false;
+                thrusters.SetThrottle(0f);
+                thrusters.SetAstroThrottle(transform.InverseTransformDirection(rb.velocity).z / thrusters.maxAstroSpeed);
                 landingGear.Retract();
                 Debug.Log("Ship: Astro Flight on");
                 break;
@@ -180,9 +225,7 @@ public class Ship : MonoBehaviour, IControllable, IUsable {
                 break;
         }
 
-        if (thrusters) thrusters.ResetThrottles();
-        if (boosters) boosters.ResetThrottles();
-
+        shipComputer.ChangeAssistMode(mode);
         assistMode = mode;
     }
 
@@ -201,11 +244,9 @@ public class Ship : MonoBehaviour, IControllable, IUsable {
                 if (connected) {
                     thrusters = module.GetComponent<Thrusters>();
                     Debug.Log("Ship: Thrusters connected");
-
                 } else {
                     thrusters = null;
                     Debug.Log("Ship: Thrusters disconnected");
-
                 }
                 break;
             case GameTypes.ModuleType.Boosters:
@@ -220,20 +261,6 @@ public class Ship : MonoBehaviour, IControllable, IUsable {
         }
     }
 
-    void UpdateThrottleGauge(float throttle) {
-        throttleGauge.fillAmount = Mathf.Abs(throttle);
-
-        if (throttle >= 0f) throttleGauge.color = throttleColour;
-        else throttleGauge.color = warningColour;
-    }
-
-    void UpdateFuelGauge(float fuel) {
-        fuelGauge.fillAmount = fuel;
-
-        if (fuel > 0.25f) fuelGauge.color = fuelColour;
-        else fuelGauge.color = warningColour;
-    }
-
     public void Use() {
         PlayerControl.instance.TakeControl(this);
 
@@ -244,14 +271,38 @@ public class Ship : MonoBehaviour, IControllable, IUsable {
 
     public void TogglePower(bool toggle) {
         if (toggle) {
+            // Assist & Modules
+            if (boosters) {
+                boosters.TogglePower(true);
+                ChangeAssistMode(GameTypes.AssistMode.Hover);
+            }
+            if (thrusters) thrusters.TogglePower(true);
+            rb.angularDrag = 2f;
+
+            // Computer
+            shipComputer.TogglePower(true);
+
+            // Light
+            if (lightOn) shipLight.TogglePower(true);
+
             powered = true;
             Debug.Log("Ship: Powered on");
-            if (boosters) ChangeAssistMode(GameTypes.AssistMode.Hover);
         } else {
+            // Assist & Modules
             ChangeAssistMode(GameTypes.AssistMode.NoAssist);
+            rb.angularDrag = 0f;
+            if (boosters) boosters.TogglePower(false);
+            if (thrusters) thrusters.TogglePower(false);
+
+            // Computer
+            shipComputer.UpdateThrottleGauge(0f);
+            shipComputer.UpdateFuelGauge(0f);
+            shipComputer.TogglePower(false);
+
+            // Light
+            shipLight.TogglePower(false);
+
             powered = false;
-            UpdateThrottleGauge(0f);
-            UpdateFuelGauge(0f);
             Debug.Log("Ship: Powered off");
         }
     }
@@ -279,6 +330,7 @@ public class Ship : MonoBehaviour, IControllable, IUsable {
 
     IEnumerator EnterShip() {
         busy = true;
+        spaceParticles.Play();
 
         yield return new WaitForSeconds(1f);
 
@@ -293,12 +345,15 @@ public class Ship : MonoBehaviour, IControllable, IUsable {
 
         Canopy canopy = GetComponentInChildren<Canopy>();
         if (!canopy.IsOpen()) canopy.Use();
-
-        PlayerCamera.instance.FirstPerson();
+        
+        if (PlayerCamera.instance.IsThirdPerson()) PlayerCamera.instance.FirstPerson();
+        freeLook = false;
 
         yield return new WaitForSeconds(1f);
 
         SceneManager.instance.SpawnPlayer(playerExit, rb.velocity);
+        spaceParticles.Stop();
+        spaceParticles.Clear();
         busy = false;
     }
 }

@@ -17,7 +17,7 @@ public class PlayerCamera : MonoBehaviour {
     TargetingSystem targetingSystem;
 
     [Header("Positioning")]
-    [SerializeField] float snapSpeed = 3f;
+    [SerializeField] float cameraMoveSpeed = 2f;
     [SerializeField] Vector3 shipOffset;
 
     [Header("Raycasting")]
@@ -25,7 +25,7 @@ public class PlayerCamera : MonoBehaviour {
     [SerializeField] LayerMask useMask;
     [SerializeField] float usableUIPromptRange = 5f;
     [SerializeField] float dematUIPromptRange = 5f;
-    [Space]
+
     [HideInInspector] public bool checkForUsable;
     [HideInInspector] public bool checkForMaterializable;
 
@@ -70,22 +70,35 @@ public class PlayerCamera : MonoBehaviour {
         }
 
         if (transform.parent) {
-            if (thirdPerson && (transform.localPosition != shipOffset || transform.localRotation != Quaternion.identity)) {
-                transform.localPosition = Vector3.Lerp(transform.localPosition, shipOffset, snapSpeed * Time.deltaTime);
-            } else if (!thirdPerson && (transform.localPosition != Vector3.zero || transform.localRotation != Quaternion.identity)) {
-                transform.localPosition = Vector3.Lerp(transform.localPosition, Vector3.zero, snapSpeed * Time.deltaTime);
+            if (!thirdPerson && (transform.localPosition != Vector3.zero || transform.localRotation != Quaternion.identity)) {
+                transform.localPosition = Vector3.Lerp(transform.localPosition, Vector3.zero, cameraMoveSpeed * Time.deltaTime);
+                transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.identity, cameraMoveSpeed * Time.deltaTime);
             }
-            transform.localRotation = Quaternion.Slerp(transform.localRotation, Quaternion.identity, snapSpeed * Time.deltaTime);
         }
     }
 
-    public void ToggleThirdPerson () {
-        if (thirdPerson) thirdPerson = false;
-        else thirdPerson = true;
+    public void TogglePerspective() {
+        if (thirdPerson) {
+            FirstPerson();
+        } else {
+            ThirdPerson();
+        }
+
+        transform.localRotation = Quaternion.identity;
     }
 
     public void FirstPerson() {
+        transform.localPosition = Vector3.zero;
         thirdPerson = false;
+    }
+
+    public void ThirdPerson() {
+        transform.localPosition = shipOffset;
+        thirdPerson = true;
+    }
+
+    public bool IsThirdPerson() {
+        return thirdPerson;
     }
 
     public void MoveCamToPlayer() {

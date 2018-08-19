@@ -16,6 +16,10 @@ public interface IMaterializeable {
     void Dematerialize(Material demat);
 }
 
+public interface IPowerable {
+    void TogglePower(bool toggle);
+}
+
 public interface ICollectable {
     void Pickup();
 }

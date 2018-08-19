@@ -9,11 +9,7 @@
 
 public class GravityWell : MonoBehaviour {
 
-    [SerializeField] float gravityStrength = 15000f;
-
-    void Start() {
-        gravityStrength *= SceneManager.GRAVITY_CONSTANT;
-    }
+    [SerializeField] float gravityStrength = 100f;
 
     void FixedUpdate() {
         PullObjects();
@@ -24,7 +20,7 @@ public class GravityWell : MonoBehaviour {
             if (rb.useGravity) {
                 Vector3 gravity = (transform.position - rb.transform.position).normalized
                     / Mathf.Pow(Vector3.Distance(transform.position, rb.transform.position), 2f);
-                rb.AddForce(gravity * gravityStrength, ForceMode.Acceleration);
+                rb.AddForce(gravity * gravityStrength * SceneManager.GRAVITY_CONSTANT, ForceMode.Acceleration);
             }
         }
     }

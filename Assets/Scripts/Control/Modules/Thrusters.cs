@@ -7,7 +7,7 @@
 // Purpose: Powers forward/back movement of the ship
 //
 
-public class Thrusters : ShipModule {
+public class Thrusters : ShipModule, IPowerable {
 
     [SerializeField] float acceleration = 50f;
     public float maxAstroSpeed = 50f;
@@ -20,10 +20,15 @@ public class Thrusters : ShipModule {
     TrailRenderer[] trails;
     bool trailsEmitting = false;
 
+    [SerializeField] Material onMaterial;
+    [SerializeField] Material offMaterial;
+    Light engineLight;
+
     protected override void Awake() {
         base.Awake();
         moduleType = GameTypes.ModuleType.Thrusters;
         trails = GetComponentsInChildren<TrailRenderer>();
+        engineLight = GetComponentInChildren<Light>();
     }
 
     void FixedUpdate() {
@@ -39,16 +44,17 @@ public class Thrusters : ShipModule {
         throttle = amount;
     }
 
-    public float AdjustAstroThrottle(float amount) {
-        astroThrottle += amount;
-        astroThrottle = Mathf.Clamp(astroThrottle, -0.5f, 1f);
-        return astroThrottle;
+    public void SetAstroThrottle(float amount) {
+        astroThrottle = Mathf.Clamp(amount, -0.5f, 1f);
     }
 
-    public void ResetThrottles() {
-        throttle = 0f;
-        astroThrottle = 0f;
-        ToggleTrails(false);
+    public void AdjustAstroThrottle(float amount) {
+        astroThrottle += amount;
+        astroThrottle = Mathf.Clamp(astroThrottle, -0.5f, 1f);
+    }
+
+    public float GetAstroThrottle() {
+        return astroThrottle;
     }
 
     public float GetAstroSpeed() {
@@ -71,5 +77,22 @@ public class Thrusters : ShipModule {
             foreach (TrailRenderer trail in trails) trail.emitting = false;
             trailsEmitting = false;
         }
+    }
+
+    public void TogglePower(bool toggle) {
+        MeshRenderer mesh = GetComponent<MeshRenderer>();
+        Material[] mats = mesh.materials;
+
+        if (toggle) {
+            engineLight.enabled = true;
+            mats[2] = onMaterial;
+        } else {
+            SetThrottle(0f);
+            SetAstroThrottle(0f);
+            engineLight.enabled = false;
+            mats[2] = offMaterial;
+        }
+
+        mesh.materials = mats;
     }
 }

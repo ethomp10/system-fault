@@ -3,7 +3,9 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - PlantableSurface
+  - Tree
   layers:
   - Default
   - TransparentFX
@@ -15,7 +17,7 @@ TagManager:
   - 
   - Usable
   - Materializable
-  - 
+  - Foliage
   - 
   - 
   - 
@@ -38,9 +40,9 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: 3D UI
+    uniqueID: 792688075
+    locked: 0
   - name: Default
     uniqueID: 0
-    locked: 0
-  - name: 3D UI
-    uniqueID: 1847747011
     locked: 0

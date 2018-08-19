@@ -11,7 +11,7 @@
 
 public class LandingGear : MonoBehaviour {
 
-    [SerializeField] float extensionSpeed = 1f;
+    [SerializeField] float extensionSpeed = 100f;
 
     SkinnedMeshRenderer mesh;
     BoxCollider[] boxColliders;

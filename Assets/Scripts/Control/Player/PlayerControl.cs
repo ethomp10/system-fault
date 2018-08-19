@@ -29,6 +29,7 @@ public struct ControlObject {
     public bool interact;
     public bool attachShieldCell;
     public bool chargeShieldCell;
+    public bool light;
 
     // Weapon types
     public bool matterManipilator;
@@ -79,6 +80,7 @@ public class PlayerControl : MonoBehaviour {
             currentInput.interact = Input.GetButtonDown("Interact");
             currentInput.attachShieldCell = Input.GetButtonDown("Attach Shield Cell");
             currentInput.chargeShieldCell = Input.GetButtonDown("Charge Shield Cell");
+            currentInput.light = Input.GetButtonDown("Light");
 
             currentInput.matterManipilator = Input.GetButtonDown("Matter Manipulator");
             currentInput.weapon0 = Input.GetButtonDown("Pulse Cannon/Energy Weapon");

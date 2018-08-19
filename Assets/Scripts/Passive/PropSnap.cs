@@ -18,9 +18,7 @@ public class PropSnap : MonoBehaviour, ISnappable {
 
     void Update () {
         #if UNITY_EDITOR
-        if (!Application.isPlaying && transform.parent != null) {
-            SnapToPoint(transform.parent.position);
-        }
+        if (!Application.isPlaying && transform.parent != null) SnapToPoint(transform.parent.position);
         #endif
     }
 }

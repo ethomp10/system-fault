@@ -7,7 +7,7 @@
 // Purpose: Powers ship rotation, and vertical/horizontal movement
 //
 
-public class Boosters : ShipModule {
+public class Boosters : ShipModule, IPowerable {
 
     [SerializeField] float acceleration = 30f;
     [SerializeField] float torqueAcceleration = 3f;
@@ -21,10 +21,15 @@ public class Boosters : ShipModule {
     TrailRenderer[] trails;
     bool trailsEmitting = false;
 
+    [SerializeField] Material onMaterial;
+    [SerializeField] Material offMaterial;
+    Light[] engineLights;
+
     protected override void Awake() {
         base.Awake();
         moduleType = GameTypes.ModuleType.Boosters;
         trails = GetComponentsInChildren<TrailRenderer>();
+        engineLights = GetComponentsInChildren<Light>();
     }
 
     void FixedUpdate() {
@@ -62,5 +67,21 @@ public class Boosters : ShipModule {
             foreach (TrailRenderer trail in trails) trail.emitting = false;
             trailsEmitting = false;
         }
+    }
+
+    public void TogglePower(bool toggle) {
+        MeshRenderer mesh = GetComponent<MeshRenderer>();
+        Material[] mats = mesh.materials;
+
+        if (toggle) {
+            foreach (Light light in engineLights) light.enabled = true;
+            mats[2] = onMaterial;
+        } else {
+            foreach (Light light in engineLights) light.enabled = false;
+            mats[2] = offMaterial;
+            ResetThrottles();
+        }
+
+        mesh.materials = mats;
     }
 }
