@@ -45,6 +45,8 @@ public class PlayerControl : MonoBehaviour {
 
     IControllable controlActor = null;
 
+    public bool control = true;
+
     void Awake() {
         if (instance == null) instance = this;
         else if (instance != this) Destroy(gameObject);
@@ -56,12 +58,20 @@ public class PlayerControl : MonoBehaviour {
 
     void Start() {
         currentInput = new ControlObject();
+        LockMouse();
+    }
+
+    void OnApplicationFocus(bool focus) {
+        if (focus) LockMouse();
+    }
+
+    void LockMouse() {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
 
     void Update() {
-        if (controlActor != null) {
+        if (control && controlActor != null) {
             currentInput.forwardBack = Input.GetAxis("Move Forward/Back");
             currentInput.rightLeft = Input.GetAxis("Move Right/Left");
             currentInput.upDown = Input.GetAxis("Move Up/Down");

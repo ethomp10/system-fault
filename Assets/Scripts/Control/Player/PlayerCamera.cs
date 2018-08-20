@@ -56,6 +56,10 @@ public class PlayerCamera : MonoBehaviour {
         return targetingSystem.Target(range, materializeMask);
     }
 
+    public RaycastHit? GetPhysicalTarget(float range) {
+        return targetingSystem.Target(range);
+    }
+
     void FixedUpdate() {
         if (checkForUsable) {
             RaycastHit? hit = GetUsableTarget(usableUIPromptRange);

@@ -74,6 +74,12 @@ public class Player : MonoBehaviour, IControllable, IGroundable, IDamageable {
         if (controlObject.interact) {
             RaycastHit? hit = GetComponentInChildren<PlayerCamera>().GetUsableTarget(useRange);
             if (hit != null && PlayerCamera.instance.checkForUsable) hit.Value.collider.GetComponent<IUsable>().Use();
+
+            // TODO: Get rid of this
+            hit = GetComponentInChildren<PlayerCamera>().GetPhysicalTarget(100f);
+            if (hit != null && !hit.Value.collider.CompareTag("Player") && hit.Value.collider.GetComponent<IDamageable>() != null) {
+                hit.Value.collider.GetComponent<IDamageable>().Damage(10f);
+            }
         }
 
         if (controlObject.chargeShieldCell) {

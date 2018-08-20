@@ -12,4 +12,5 @@ public class Planter : MonoBehaviour {
     public float minimumScale = 0.6f;
     public float maximumScale = 1.2f;
     [Range(1, 10)] public float density = 5f;
+    public LayerMask densityLayer;
 }

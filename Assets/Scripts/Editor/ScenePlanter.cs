@@ -27,7 +27,7 @@ public class ScenePlanter : Editor {
         Ray ray = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
         if (Physics.Raycast(ray, out hit)) {
             if (hit.collider.CompareTag("PlantableSurface")) {
-                if (Physics.OverlapSphere(hit.point, 50f / planter.density, LayerMask.GetMask("Foliage")).Length == 0) {
+                if (Physics.OverlapSphere(hit.point, 50f / planter.density, planter.densityLayer).Length == 0) {
                     GameObject thing = PrefabUtility.InstantiatePrefab(planter.objectPrefabs[Random.Range(0, planter.objectPrefabs.Length)]) as GameObject;
 
                     float scale = Random.Range(planter.minimumScale, planter.maximumScale);
