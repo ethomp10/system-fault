@@ -30,7 +30,6 @@ public class ShipComputer : MonoBehaviour, IPowerable {
     Color throttleColour = new Color(0f, 220/255f, 0f, 1f);
     Color warningColour = new Color(1f, 0f, 0f, 1f);
 
-
     public void UpdateThrottleGauge(float throttle) {
         throttleGauge.fillAmount = Mathf.Abs(throttle);
 

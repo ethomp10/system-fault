@@ -7,6 +7,8 @@
 // Purpose: Pickup which allows the player to have additional shields
 //
 
+[RequireComponent(typeof(Rigidbody))]
+
 public class ShieldCell : MonoBehaviour, ICollectable {
     public void Pickup() {
         PlayerData.instance.PickupShieldCell();

@@ -736,8 +736,9 @@ GameObject:
   m_Component:
   - component: {fileID: 4604407683109830}
   - component: {fileID: 65881720431477444}
-  - component: {fileID: 114724817101505812}
   - component: {fileID: 82184118550197972}
+  - component: {fileID: 114724817101505812}
+  - component: {fileID: 114839541638493774}
   m_Layer: 0
   m_Name: Refinery
   m_TagString: Untagged
@@ -8612,5 +8613,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3c5a834a4a3d6424cae2303dfd70df9d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &114839541638493774
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1391012464773976}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49da54f5218ea6541852fe0fe3b0243a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

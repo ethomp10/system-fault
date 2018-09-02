@@ -29,7 +29,7 @@ public class MusicPlayer : MonoBehaviour {
 
     void OnTriggerEnter(Collider other) {
         if (other.GetComponentInChildren<Camera>()) {
-            Debug.Log("Music Player: Music Zone Entered");
+            Debug.Log("Music Player: Music zone entered");
 
             if (source.isPlaying) {
                 fadeDirection = 1;
@@ -42,7 +42,7 @@ public class MusicPlayer : MonoBehaviour {
 
     void OnTriggerExit(Collider other) {
         if (other.GetComponentInChildren<Camera>()) {
-            Debug.Log("Music Player: Music Zone Exited");
+            Debug.Log("Music Player: Music zone exited");
             fadeDirection = -1;
         }
     }

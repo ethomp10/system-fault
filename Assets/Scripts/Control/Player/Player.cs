@@ -29,6 +29,8 @@ public class Player : MonoBehaviour, IControllable, IGroundable, IDamageable {
     [SerializeField] float maxYAngle = 60f;
 
     [Space]
+    [Header("Camera")]
+    [SerializeField] Transform cameraRig;
     [SerializeField] float useRange = 5f;
 
     ModuleSlot fuelSlot;
@@ -41,52 +43,68 @@ public class Player : MonoBehaviour, IControllable, IGroundable, IDamageable {
     Vector3 moveDirection;
     Vector3 lookRotation;
 
-    [SerializeField] Transform cameraRig;
+    [HideInInspector] public Ship ship;
 
     void Start() {
-        health = maxHealth; // TODO: Remove!
+        health = maxHealth;
 
         rb = GetComponent<Rigidbody>();
         fuelSlot = GetComponentInChildren<ModuleSlot>();
-        if (fuelSlot == null || fuelSlot.slotType != GameTypes.ModuleType.FuelPack) {
-            Debug.LogError("Player: No fuel slot set as child");
-        }
-
-        if (cameraRig == null) {
-            Debug.LogError("Player: No camera rig set in inspector");
-        }
+        if (fuelSlot == null || fuelSlot.slotType != GameTypes.ModuleType.FuelPack) Debug.LogError("Player: No fuel slot set as child");
+        if (cameraRig == null)  Debug.LogError("Player: No camera rig set in inspector");
     }
 
     void FixedUpdate() {
         Move();
         if (!snapping) Rotate();
         if (snapping) Look();
+
+        if (ship) UpdateShipRadar(); else ship = FindObjectOfType<Ship>();
+    }
+
+    void UpdateShipRadar() {
+        Vector3 playerToShip = (ship.transform.position - transform.position).normalized;
+        float rightLeft = Vector3.Dot(transform.right, playerToShip);
+        float forwardBack = Vector3.Dot(transform.forward, playerToShip);
+
+        if (rightLeft > 0) {
+            if (forwardBack > 0 && rightLeft < 0.1) PlayerHUD.instance.UpdateShipRadar(0);
+            else PlayerHUD.instance.UpdateShipRadar(1);
+        } else if (rightLeft < 0) {
+            if (forwardBack > 0 && rightLeft > -0.1) PlayerHUD.instance.UpdateShipRadar(0);
+            else PlayerHUD.instance.UpdateShipRadar(-1);
+        }
     }
 
     public void CheckInput(ControlObject controlObject) {
+        // Move
         if (snapping) moveDirection = (controlObject.rightLeft * transform.right + controlObject.forwardBack * transform.forward).normalized;
         else moveDirection = (controlObject.rightLeft * transform.right + controlObject.forwardBack * transform.forward + controlObject.upDown * transform.up).normalized;
 
+        // Look/Rotate
         lookRotation += new Vector3(-controlObject.verticalLook, controlObject.horizontalLook, controlObject.roll);
 
+        // Jump
         if (controlObject.jump && grounded) Jump();
 
+        // Interact
         if (controlObject.interact) {
-            RaycastHit? hit = GetComponentInChildren<PlayerCamera>().GetUsableTarget(useRange);
-            if (hit != null && PlayerCamera.instance.checkForUsable) hit.Value.collider.GetComponent<IUsable>().Use();
+            RaycastHit? hit;
 
             // TODO: Get rid of this
-            hit = GetComponentInChildren<PlayerCamera>().GetPhysicalTarget(100f);
+            hit = GetComponentInChildren<PlayerCamera>().GetEnergyTarget(100f);
             if (hit != null && !hit.Value.collider.CompareTag("Player") && hit.Value.collider.GetComponent<IDamageable>() != null) {
                 hit.Value.collider.GetComponent<IDamageable>().Damage(10f);
             }
+            ////////////////////////
+
+            hit = GetComponentInChildren<PlayerCamera>().GetUsableTarget(useRange);
+            if (hit != null && PlayerCamera.instance.checkForUsable) hit.Value.collider.GetComponent<IUsable>().Use();
         }
 
-        if (controlObject.chargeShieldCell) {
-            if (fuelSlot.connectedModule) {
-                fuelSlot.connectedModule.GetComponent<FuelPack>().ChargeFuelCell();
-            }
-        }
+        // Shield Cells
+        if (controlObject.attachShieldCell && fuelSlot.connectedModule) fuelSlot.connectedModule.GetComponent<FuelPack>().AttachShieldCell();
+        if (controlObject.chargeShieldCell && fuelSlot.connectedModule) fuelSlot.connectedModule.GetComponent<FuelPack>().ChargeShields();
 
         if (controlObject.fire) {
             MatterManipulator matterManipulator = GetComponentInChildren<MatterManipulator>();
@@ -107,7 +125,8 @@ public class Player : MonoBehaviour, IControllable, IGroundable, IDamageable {
 
     void Look() {
         // Horizontal
-        transform.Rotate(0f, lookRotation.y * lookSensitivity, 0f, Space.Self);
+        Quaternion deltaRot = Quaternion.AngleAxis(lookRotation.y * lookSensitivity, Vector3.up);
+        rb.MoveRotation(rb.rotation * deltaRot);
 
         // Vertical
         yAngle = Mathf.Clamp(yAngle + -lookRotation.x * lookSensitivity, minYAngle, maxYAngle);
@@ -131,21 +150,15 @@ public class Player : MonoBehaviour, IControllable, IGroundable, IDamageable {
         this.grounded = grounded;
     }
 
-    public void SetSnapping(bool snapping) {
-        if (snapping) {
+    public void SetSnapping(bool snap) {
+        if (snap) {
             rb.drag = 0f;
             rb.constraints = RigidbodyConstraints.FreezeRotation;
         } else {
             rb.drag = 1f;
             rb.constraints = RigidbodyConstraints.None;
         }
-        this.snapping = snapping;
-    }
-
-    public void AttemptCellTransfer() {
-        if (fuelSlot.connectedModule != null) {
-            fuelSlot.connectedModule.GetComponent<FuelPack>().AttachAllPossibleCells();
-        }
+        snapping = snap;
     }
 
     public void SetCam(PlayerCamera controlCam) {
@@ -162,7 +175,6 @@ public class Player : MonoBehaviour, IControllable, IGroundable, IDamageable {
         }
 
         health -= amount;
-        Debug.LogWarning("Player: Health: " + health);
         if (health <= 0) {
             PlayerControl.instance.RemoveControl();
             SceneManager.instance.DespawnPlayer();

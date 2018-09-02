@@ -118,7 +118,6 @@ public class Ship : MonoBehaviour, IControllable, IUsable, IPowerable {
                                 fuelPack.DrainFuel(1f / boosters.efficiency * Time.deltaTime); // Idle burn rate
                                 break;
                         }
-                        
                     }
                 }
 
@@ -152,6 +151,10 @@ public class Ship : MonoBehaviour, IControllable, IUsable, IPowerable {
                 }
             } else TogglePower(false);
         } else if (controlObject.interact && !busy) StartCoroutine("ExitShip");
+
+        // Shield Cells
+        if (controlObject.attachShieldCell && fuelPack) fuelPack.AttachShieldCell();
+        if (controlObject.chargeShieldCell && fuelPack) fuelPack.ChargeShields();
 
         // Camera
         if (controlObject.aim) {
@@ -266,11 +269,14 @@ public class Ship : MonoBehaviour, IControllable, IUsable, IPowerable {
     }
 
     public void Use() {
-        PlayerControl.instance.TakeControl(this);
+        if (!FindObjectOfType<Player>().GetComponentInChildren<ModuleSlot>().connectedModule) {
+            PlayerControl.instance.TakeControl(this);
 
-        if (!busy) StartCoroutine("EnterShip");
+            if (!busy) StartCoroutine("EnterShip");
 
-        SceneManager.instance.DespawnPlayer();
+            SceneManager.instance.DespawnPlayer();
+        } else Debug.LogWarning("Ship: Please remove fuel pack before entering");
+        
     }
 
     public void TogglePower(bool toggle) {
@@ -314,7 +320,7 @@ public class Ship : MonoBehaviour, IControllable, IUsable, IPowerable {
     bool FuelAvailable() {
         if (fuelPack == null) return false;
 
-        return fuelPack.IsEmpty();
+        return !fuelPack.IsEmpty();
     }
 
     public void SetCam(PlayerCamera controlCam) {
@@ -341,6 +347,8 @@ public class Ship : MonoBehaviour, IControllable, IUsable, IPowerable {
         Canopy canopy = GetComponentInChildren<Canopy>();
         if (canopy.IsOpen()) canopy.Use();
 
+        if (fuelPack) PlayerHUD.instance.EnableFuelPackHUD(fuelPack);
+
         busy = false;
     }
 
@@ -349,7 +357,9 @@ public class Ship : MonoBehaviour, IControllable, IUsable, IPowerable {
 
         Canopy canopy = GetComponentInChildren<Canopy>();
         if (!canopy.IsOpen()) canopy.Use();
-        
+
+        if (fuelPack) PlayerHUD.instance.DisableFuelPackHUD();
+
         if (PlayerCamera.instance.IsThirdPerson()) PlayerCamera.instance.FirstPerson();
         freeLook = false;
 

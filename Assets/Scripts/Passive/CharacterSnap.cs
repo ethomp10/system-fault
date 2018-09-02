@@ -7,6 +7,8 @@
 // Purpose: Orients objects to a specified point in game time; useful the player and AI
 //
 
+[RequireComponent(typeof(Rigidbody))]
+
 public class CharacterSnap : MonoBehaviour, ISnappable {
 
     [SerializeField] float snapSpeed = 3f;
@@ -14,16 +16,22 @@ public class CharacterSnap : MonoBehaviour, ISnappable {
     Vector3? snapPoint = null;  // For planet snapping
     Vector3? snapUp = null;     // For room snapping
 
+    Rigidbody rb;
+
+    void Start() {
+        rb = GetComponent<Rigidbody>();
+    }
+
     public void SnapToPoint(Vector3 point) {
         Vector3 up = (transform.position - point).normalized;
 
         Quaternion targetRotation = Quaternion.FromToRotation(transform.up, up) * transform.rotation;
-        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, snapSpeed * Time.fixedDeltaTime);
+        rb.MoveRotation(Quaternion.Slerp(rb.rotation, targetRotation, snapSpeed * Time.fixedDeltaTime));
     }
 
     public void SnapToVector(Vector3 up) {
         Quaternion targetRotation = Quaternion.FromToRotation(transform.up, up) * transform.rotation;
-        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, snapSpeed * Time.fixedDeltaTime);
+        rb.MoveRotation(Quaternion.Slerp(rb.rotation, targetRotation, snapSpeed * Time.fixedDeltaTime));
     }
 
     void FixedUpdate() {

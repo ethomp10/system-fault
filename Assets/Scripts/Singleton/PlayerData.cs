@@ -23,14 +23,13 @@ public class PlayerData : MonoBehaviour {
 
     public void PickupShieldCell() {
         shieldCells++;
-        Debug.LogWarning("PlayerData: Current cells: " + shieldCells);
-        FindObjectOfType<Player>().AttemptCellTransfer();
+        Debug.Log("PlayerData: Shield cells: " + shieldCells);
     }
 
-    public int DropShieldCells(int cellsWanted) {
-        int cellsDropped = Mathf.Min(cellsWanted, shieldCells);
-        shieldCells -= cellsDropped;
-        Debug.LogWarning("PlayerData: Current cells: " + shieldCells);
-        return cellsDropped;
+    public bool DropShieldCell() {
+        if (shieldCells > 0) {
+            shieldCells--;
+            return true;
+        } else return false;
     }
 }

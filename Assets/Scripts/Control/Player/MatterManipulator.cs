@@ -43,11 +43,14 @@ public class MatterManipulator : MonoBehaviour {
     public void EquipFuelPack(ModuleSlot playerSlot) {
         if (heldObject != null) {
             if (heldObject.GetComponent<FuelPack>()) {
-                if (playerSlot.connectedModule == null) ConnectModule(playerSlot);
-                else Debug.LogWarning("MatterManipulator: A different fuel pack is already equipped");
+                if (playerSlot.connectedModule == null) {
+                    PlayerHUD.instance.EnableFuelPackHUD(heldObject.GetComponent<FuelPack>());
+                    ConnectModule(playerSlot);
+                } else Debug.LogWarning("MatterManipulator: A different fuel pack is already equipped");
             } else Debug.LogWarning("MatterManipulator: Not holding fuel pack");
         } else {
             if (playerSlot.connectedModule != null) {
+                PlayerHUD.instance.DisableFuelPackHUD();
                 GrabObject(playerSlot.connectedModule.gameObject);
                 assignedSlot = null;
             }
@@ -70,10 +73,11 @@ public class MatterManipulator : MonoBehaviour {
 
         Ship ship = slot.GetComponentInParent<Ship>();
         if (ship) {
-            ship.ToggleModuleSlots(false);
             ship.UpdateModuleStatus(currentModule, currentModule.moduleType, true);
             currentModule.shipRB = ship.GetComponent<Rigidbody>();
         }
+
+        FindObjectOfType<Ship>().ToggleModuleSlots(false);
 
         heldObject = null;
 
@@ -112,15 +116,14 @@ public class MatterManipulator : MonoBehaviour {
 
         ShipModule currentModule = gameObject.GetComponent<ShipModule>();
         if (currentModule) {
-            Ship ship = FindObjectOfType<Ship>();
-
             if (currentModule.connected) {
                 DisconnectModule(gameObject.GetComponentInParent<ModuleSlot>());
                 currentModule.shipRB = null;
-                ship.UpdateModuleStatus(currentModule, currentModule.moduleType, false);
+                Ship ship = currentModule.GetComponentInParent<Ship>();
+                if (ship) ship.UpdateModuleStatus(currentModule, currentModule.moduleType, false);
             }
 
-            ship.ToggleModuleSlots(true);
+            FindObjectOfType<Ship>().ToggleModuleSlots(true);
         }
 
         gameObject.transform.parent = transform;

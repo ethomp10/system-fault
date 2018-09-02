@@ -75,7 +75,7 @@ GameObject:
   - component: {fileID: 4899776711855226}
   - component: {fileID: 135680604766051450}
   - component: {fileID: 114812769956246708}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: GroundCheck
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -106,7 +106,9 @@ GameObject:
   m_Component:
   - component: {fileID: 4868457080495422}
   - component: {fileID: 135415453552848048}
-  m_Layer: 0
+  - component: {fileID: 108051286148159628}
+  - component: {fileID: 114287240608599570}
+  m_Layer: 2
   m_Name: CameraRig
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -119,8 +121,8 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1518784200778558}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0.8545092, y: 0.50710434, z: -0.07122454, w: 0.087100066}
+  m_LocalPosition: {x: -415, y: -256.98, z: -113.75}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4868457080495422}
@@ -251,7 +253,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 2
+  m_CollisionDetection: 0
 --- !u!65 &65437944639468278
 BoxCollider:
   m_ObjectHideFlags: 1
@@ -264,6 +266,43 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1.369564, y: 1.8728125, z: 0.8578812}
   m_Center: {x: -0.000036001205, y: 0.027291005, z: -0.008662494}
+--- !u!108 &108051286148159628
+Light:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1983393166391668}
+  m_Enabled: 0
+  serializedVersion: 8
+  m_Type: 0
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Intensity: 1
+  m_Range: 20
+  m_SpotAngle: 70
+  m_CookieSize: 10
+  m_Shadows:
+    m_Type: 0
+    m_Resolution: -1
+    m_CustomResolution: -1
+    m_Strength: 1
+    m_Bias: 0.05
+    m_NormalBias: 0.4
+    m_NearPlane: 0.2
+  m_Cookie: {fileID: 0}
+  m_DrawHalo: 0
+  m_Flare: {fileID: 0}
+  m_RenderMode: 0
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_Lightmapping: 4
+  m_LightShadowCasterMode: 0
+  m_AreaSize: {x: 1, y: 1}
+  m_BounceIntensity: 0
+  m_ColorTemperature: 6570
+  m_UseColorTemperature: 0
+  m_ShadowRadius: 0
+  m_ShadowAngle: 0
 --- !u!114 &114000263277841912
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -290,6 +329,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   snapSpeed: 3
+--- !u!114 &114287240608599570
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1983393166391668}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67eeb9ef19914764c9051257d4cb0862, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114423778865197066
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -320,14 +370,15 @@ MonoBehaviour:
   maxHealth: 10
   jumpForce: 20
   walkSpeed: 8
-  walkForce: 1
+  walkForce: 0.5
   airForce: 8
   airTorque: 3
   lookSensitivity: 0.5
   minYAngle: -60
   maxYAngle: 90
-  useRange: 5
   cameraRig: {fileID: 4868457080495422}
+  useRange: 5
+  ship: {fileID: 0}
 --- !u!114 &114812769956246708
 MonoBehaviour:
   m_ObjectHideFlags: 1
