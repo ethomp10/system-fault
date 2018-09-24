@@ -12,7 +12,7 @@ public class Atmosphere : MonoBehaviour {
     void OnTriggerEnter(Collider other) {
         // Character Snap
         if (other.GetComponent<CharacterSnap>() != null) {
-            other.GetComponent<CharacterSnap>().SetSnapPoint(transform.position);
+            other.GetComponent<CharacterSnap>().SetSnapPoint(transform);
         }
     }
 

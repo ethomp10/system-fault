@@ -7,12 +7,12 @@
 
 public class GameTypes {
 	public enum ModuleType {
+        FuelPack,
         Thrusters,
         Boosters,
-        FuelPack,
         QuantumDrive,
-        KineticWeapon,
-        PulseWeapon
+        PulseWeapon,
+        KineticWeapon
     };
 
     public enum AssistMode {

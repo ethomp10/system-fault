@@ -45,13 +45,15 @@ public class Player : MonoBehaviour, IControllable, IGroundable, IDamageable {
 
     [HideInInspector] public Ship ship;
 
-    void Start() {
+    void Awake() {
         health = maxHealth;
 
         rb = GetComponent<Rigidbody>();
         fuelSlot = GetComponentInChildren<ModuleSlot>();
         if (fuelSlot == null || fuelSlot.slotType != GameTypes.ModuleType.FuelPack) Debug.LogError("Player: No fuel slot set as child");
         if (cameraRig == null)  Debug.LogError("Player: No camera rig set in inspector");
+
+        PlayerControl.instance.TakeControl(this);
     }
 
     void FixedUpdate() {
@@ -60,6 +62,8 @@ public class Player : MonoBehaviour, IControllable, IGroundable, IDamageable {
         if (snapping) Look();
 
         if (ship) UpdateShipRadar(); else ship = FindObjectOfType<Ship>();
+
+        rb.velocity = Vector3.ClampMagnitude(rb.velocity, SceneManager.MAX_PLAYER_SPEED + 3f);
     }
 
     void UpdateShipRadar() {
@@ -103,7 +107,6 @@ public class Player : MonoBehaviour, IControllable, IGroundable, IDamageable {
         }
 
         // Shield Cells
-        if (controlObject.attachShieldCell && fuelSlot.connectedModule) fuelSlot.connectedModule.GetComponent<FuelPack>().AttachShieldCell();
         if (controlObject.chargeShieldCell && fuelSlot.connectedModule) fuelSlot.connectedModule.GetComponent<FuelPack>().ChargeShields();
 
         if (controlObject.fire) {
@@ -116,6 +119,18 @@ public class Player : MonoBehaviour, IControllable, IGroundable, IDamageable {
         if (controlObject.aim) { 
             GetComponentInChildren<MatterManipulator>().EquipFuelPack(fuelSlot);
         }
+    }
+
+    public void ResetPlayer(Transform location) {
+        moveDirection = Vector3.zero;
+        lookRotation = Vector3.zero;
+        yAngle = 0f;
+
+        transform.position = location.position;
+        transform.rotation = location.rotation;
+        cameraRig.localRotation = Quaternion.identity;
+
+        rb.velocity = Vector3.zero;
     }
 
     void Move() {
@@ -151,13 +166,8 @@ public class Player : MonoBehaviour, IControllable, IGroundable, IDamageable {
     }
 
     public void SetSnapping(bool snap) {
-        if (snap) {
-            rb.drag = 0f;
-            rb.constraints = RigidbodyConstraints.FreezeRotation;
-        } else {
-            rb.drag = 1f;
-            rb.constraints = RigidbodyConstraints.None;
-        }
+        if (snap) rb.constraints = RigidbodyConstraints.FreezeRotation;
+        else rb.constraints = RigidbodyConstraints.None;
         snapping = snap;
     }
 
@@ -177,7 +187,7 @@ public class Player : MonoBehaviour, IControllable, IGroundable, IDamageable {
         health -= amount;
         if (health <= 0) {
             PlayerControl.instance.RemoveControl();
-            SceneManager.instance.DespawnPlayer();
+            Debug.LogWarning("Player: DEAD!");
         }
     }
 }

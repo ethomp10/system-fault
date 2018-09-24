@@ -287,6 +287,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81b790517342de34cb9105eb0b5d885e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  brokenTree: {fileID: 1534073914105624, guid: fea320b4fb5684345aac7aa11a35da3f, type: 2}
+  stump: {fileID: 1600718602878816, guid: a3c689f52f129304f86950a5432f2fb2, type: 2}
 --- !u!136 &136566532239569412
 CapsuleCollider:
   m_ObjectHideFlags: 1

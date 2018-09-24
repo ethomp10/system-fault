@@ -14,14 +14,14 @@ public static class FlockingManager {
 		return "[" + vector.x.ToString() + ", " + vector.y.ToString() + ", " + vector.z.ToString() + "]";
 	}
 
-	public static Vector3[] Headings(Vector3[] positions, Vector3[] headings, Vector3[] attractorPositions, float[] attractorScales, Vector3[] separatorPositions, float[] separatorScales, Vector3 boundingOrigin, float boundingScale, float perceptiveDistance, int flockSize, bool debug){
+	public static Vector3[] Headings(Vector3[] positions, Vector3[] headings, Vector3[] attractorPositions, float[] attractorScales, Vector3[] separatorPositions, float[] separatorScales, Vector3 boundingOrigin, float boundingScale, float perceptiveDistance, int flockSize, bool debug, bool debugHeading, bool debugCohesion, bool debugSeparation, bool debugAlignment, bool debugAttraction, bool debugBounding){
 		List<Vector3> newHeadings = new List<Vector3>();
 
-		Vector3[] cohesionVectors = Cohesion(positions, perceptiveDistance, flockSize, debug);
-		Vector3[] separationVectors = Separation(positions, separatorPositions, separatorScales, perceptiveDistance, debug);
-		Vector3[] alignmentVectors = Alignment(positions, headings, perceptiveDistance, flockSize, debug);
-		Vector3[] attractionVectors = Attraction(positions, attractorPositions, attractorScales, debug);
-		Vector3[] boundingVectors = Bounding(positions, boundingOrigin, boundingScale, debug);
+		Vector3[] cohesionVectors = Cohesion(positions, perceptiveDistance, flockSize, debug && debugCohesion);
+		Vector3[] separationVectors = Separation(positions, separatorPositions, separatorScales, perceptiveDistance, debug && debugSeparation);
+		Vector3[] alignmentVectors = Alignment(positions, headings, perceptiveDistance, flockSize, debug && debugAlignment);
+		Vector3[] attractionVectors = Attraction(positions, attractorPositions, attractorScales, debug && debugAttraction);
+		Vector3[] boundingVectors = Bounding(positions, boundingOrigin, boundingScale, debug && debugBounding);
 
 		for(int i = 0; i < cohesionVectors.Length && i < separationVectors.Length && i < alignmentVectors.Length && i < attractionVectors.Length && i < boundingVectors.Length; i++){
 			//Debug.Log("FlockingManager::Headings ~ Creating heading from cohesion vector " + Vector3ToString(cohesionVectors[i]));

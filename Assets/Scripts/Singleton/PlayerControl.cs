@@ -37,6 +37,12 @@ public struct ControlObject {
     public bool weapon1;
     public bool weapon2;
     public bool weapon3;
+
+    // UI
+    public bool menuRight;
+    public bool menuLeft;
+    public bool menuUp;
+    public bool menuDown;
 }
 
 public class PlayerControl : MonoBehaviour {
@@ -97,6 +103,11 @@ public class PlayerControl : MonoBehaviour {
             currentInput.weapon1 = Input.GetButtonDown("Foam Cannon/Kinetic Weapon");
             currentInput.weapon2 = Input.GetButtonDown("Flame Cannon");
             currentInput.weapon3 = Input.GetButtonDown("Ice Cannon");
+
+            currentInput.menuRight = Input.GetButtonDown("Menu Right");
+            currentInput.menuLeft = Input.GetButtonDown("Menu Left");
+            currentInput.menuUp = Input.GetButtonDown("Menu Up");
+            currentInput.menuDown = Input.GetButtonDown("Menu Down");
 
             controlActor.CheckInput(currentInput);
         }

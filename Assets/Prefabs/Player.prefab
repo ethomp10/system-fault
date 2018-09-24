@@ -121,8 +121,8 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1518784200778558}
-  m_LocalRotation: {x: -0.8545092, y: 0.50710434, z: -0.07122454, w: 0.087100066}
-  m_LocalPosition: {x: -415, y: -256.98, z: -113.75}
+  m_LocalRotation: {x: -0.807674, y: 0.4258936, z: 0.28796113, w: 0.2887141}
+  m_LocalPosition: {x: -432.16, y: -218.36, z: -129.61}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4868457080495422}
@@ -130,7 +130,7 @@ Transform:
   - {fileID: 4622675240498152}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -134.63, y: 18.18399, z: 47.951996}
 --- !u!4 &4490771441319162
 Transform:
   m_ObjectHideFlags: 1
@@ -247,7 +247,7 @@ Rigidbody:
   m_GameObject: {fileID: 1518784200778558}
   serializedVersion: 2
   m_Mass: 10
-  m_Drag: 1
+  m_Drag: 0
   m_AngularDrag: 2
   m_UseGravity: 1
   m_IsKinematic: 0
@@ -314,7 +314,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6480005c9adc6e4b9bbf6a57458348a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slotType: 2
+  slotType: 0
   connectedModule: {fileID: 0}
   reservedMaterial: {fileID: 2100000, guid: 8113cd56145d7c94cac79e1428dbf0f5, type: 2}
 --- !u!114 &114109336701560768

@@ -51,17 +51,17 @@ public class ShipComputer : MonoBehaviour, IPowerable {
     }
 
     public void TogglePower(bool toggle) {
+        Material[] mats = shipBodyMesh.materials;
+
         if (toggle) {
             gameObject.SetActive(true);
-            Material[] mats = shipBodyMesh.materials;
             mats[4] = screenOnMaterial;
-            shipBodyMesh.materials = mats;
         } else {
             gameObject.SetActive(false);
-            Material[] mats = shipBodyMesh.materials;
             mats[4] = screenOffMaterial;
-            shipBodyMesh.materials = mats;
         }
+
+        shipBodyMesh.materials = mats;
     }
 
     public void ChangeAssistMode(GameTypes.AssistMode mode) {

@@ -15,10 +15,13 @@ public class SceneManager : MonoBehaviour {
     public List<Rigidbody> gravityBodies = new List<Rigidbody>();
     public const float GRAVITY_CONSTANT = 100000f;
 
+    public Transform playerSpawn;
+
     GravityWell currentWell = null;
     List<GravityWell> gravityWells = new List<GravityWell>();
 
     [SerializeField] GameObject playerPrefab;
+    public const float MAX_PLAYER_SPEED = 300f;
 
     PlayerCamera playerCam;
 
@@ -36,15 +39,19 @@ public class SceneManager : MonoBehaviour {
         playerCam = FindObjectOfType<PlayerCamera>();
         if (playerCam == null) Debug.LogError("Scene Manager: No PlayerCam exists in the scene");
 
+        GameObject[] spawnPoints = GameObject.FindGameObjectsWithTag("Respawn");
+        foreach (GameObject spawnPoint in spawnPoints) spawnPoint.SetActive(false);
+
         // Gravity
         gravityBodies.AddRange(FindObjectsOfType<Rigidbody>());
         gravityWells.AddRange(FindObjectsOfType<GravityWell>());
         currentWell = FindClosestWell();
         ChangeGravityWell(currentWell);
 
-        PlayerControl.instance.TakeControl(FindObjectOfType<Player>());
-
+        // Player Spawn
+        SpawnPlayer(playerSpawn, Vector3.zero);
         PlayerCamera.instance.MoveCamToPlayer();
+
     }
 
     public void SpawnPlayer(Transform spawnPoint, Vector3 spawnVelocity) {
@@ -52,7 +59,6 @@ public class SceneManager : MonoBehaviour {
             Rigidbody playerRB = Instantiate(playerPrefab, spawnPoint.position, spawnPoint.rotation).GetComponent<Rigidbody>();
             AddGravityBody(playerRB);
             playerRB.velocity = spawnVelocity;
-            PlayerControl.instance.TakeControl(playerRB.GetComponent<Player>());
         }
     }
 

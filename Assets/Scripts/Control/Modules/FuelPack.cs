@@ -11,15 +11,14 @@ using UnityEngine.UI;
 public class FuelPack : ShipModule {
 
     [SerializeField] float maxFuel = 100f;
+    [SerializeField] [Range(1, 3)] int shieldCells = 1;
     [SerializeField] float shieldChargeRate = 1f;
     [SerializeField] float shieldChargeCost = 1f;
-    [SerializeField][Range(0, 10)] int shieldCellSlots = 4;
     [SerializeField] Image fuelGuage;
 
     const float SHIELDS_PER_CELL = 100f;
 
     float currentShields = 0f;
-    int availableCells = 0;
     int chargedCells = 0;
 
     float fuel = 0f;
@@ -48,7 +47,7 @@ public class FuelPack : ShipModule {
     public void AddShields(float amount) {
         currentShields += amount;
         if (currentShields > SHIELDS_PER_CELL) {
-            if (chargedCells < availableCells) {
+            if (chargedCells < shieldCells) {
                 chargedCells++;
                 currentShields -= SHIELDS_PER_CELL;
                 PlayerHUD.instance.ChargeShieldCell(chargedCells);
@@ -60,7 +59,7 @@ public class FuelPack : ShipModule {
 
     public void ChargeShields() {
         if (fuel >= shieldChargeCost * shieldChargeRate * Time.deltaTime) {
-            if (chargedCells < availableCells || currentShields < SHIELDS_PER_CELL) {
+            if (chargedCells < shieldCells || currentShields < SHIELDS_PER_CELL) {
                 DrainFuel(shieldChargeCost * shieldChargeRate * Time.deltaTime);
                 PlayerHUD.instance.UpdateFuelGauge(GetFuelPercentage());
 
@@ -88,15 +87,6 @@ public class FuelPack : ShipModule {
         return leftOverDamage;
     }
 
-    public void AttachShieldCell() {
-        if (availableCells < shieldCellSlots) {
-            if (PlayerData.instance.DropShieldCell()) {
-                availableCells++;
-                PlayerHUD.instance.AttachShieldCell(availableCells);
-            }
-        } else Debug.LogWarning("FuelPack: No available shield cell slot");
-    }
-
     public void UpdateFuelGauge() {
         fuelGuage.fillAmount = fuel / maxFuel;
     }
@@ -114,7 +104,7 @@ public class FuelPack : ShipModule {
     }
 
     public int GetAvailableCells() {
-        return availableCells;
+        return shieldCells;
     }
 
     public bool IsEmpty() {
@@ -123,5 +113,15 @@ public class FuelPack : ShipModule {
 
     public bool IsFull() {
         return fuel == maxFuel;
+    }
+
+    public void ShowPack(bool show) {
+        if (show) {
+            GetComponent<MeshRenderer>().enabled = true;
+            fuelGuage.enabled = true;
+        } else {
+            GetComponent<MeshRenderer>().enabled = false;
+            fuelGuage.enabled = false;
+        }
     }
 }

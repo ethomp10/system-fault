@@ -275,6 +275,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81b790517342de34cb9105eb0b5d885e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  brokenTree: {fileID: 1935721763499138, guid: 4cef064f32fd4054e877030aa6216b6e, type: 2}
+  stump: {fileID: 1964547172879298, guid: 3f491e440b544e745a5a04c190abba22, type: 2}
 --- !u!114 &114386763643655650
 MonoBehaviour:
   m_ObjectHideFlags: 1

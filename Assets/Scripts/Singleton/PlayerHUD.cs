@@ -27,18 +27,16 @@ public class PlayerHUD : MonoBehaviour {
     [SerializeField] Image[] availableCells;
     [SerializeField] Image[] chargedCells;
 
-    [Header("Fuel Pack")]
+    [Header("Radar")]
+    [SerializeField] GameObject radar;
     [SerializeField] Image shipLeft;
     [SerializeField] Image shipRight;
 
     bool animateDamage = false;
 
     void Awake() {
-        if (instance == null)
-            instance = this;
-
-        else if (instance != this)
-            Destroy(gameObject);
+        if (instance == null) instance = this;
+        else if (instance != this) Destroy(gameObject);
 
         DontDestroyOnLoad(gameObject);
     }
@@ -67,19 +65,18 @@ public class PlayerHUD : MonoBehaviour {
     }
 
     public void ToggleUsePrompt(bool show) {
-        if (show) {
-            usePrompt.enabled = true;
-        } else {
-            usePrompt.enabled = false;
-        }
+        if (show) usePrompt.enabled = true;
+        else usePrompt.enabled = false;
     }
 
     public void ToggleDematPrompt(bool show) {
-        if (show) {
-            dematPrompt.enabled = true;
-        } else {
-            dematPrompt.enabled = false;
-        }
+        if (show) dematPrompt.enabled = true;
+        else dematPrompt.enabled = false;
+    }
+
+    public void ToggleShipRadar(bool show) {
+        if (show) radar.SetActive(true);
+        else radar.SetActive(false);
     }
 
     public void UpdateShipRadar(int direction) {
@@ -119,10 +116,6 @@ public class PlayerHUD : MonoBehaviour {
         fuelPackHUD.SetActive(false);
     }
 
-    public void AttachShieldCell(int cells) {
-        for (int i = 0; i < cells; i++) availableCells[i].enabled = true;
-    }
-
     public void AddShields(float shieldPercentage) {
         shields.fillAmount = shieldPercentage;
         if (!animateDamage && damage.fillAmount < shieldPercentage) damage.fillAmount = shieldPercentage;
@@ -142,8 +135,7 @@ public class PlayerHUD : MonoBehaviour {
     }
 
     public void RemoveShieldCell(int cells) {
-        for (int i = cells; i < 10; i++) chargedCells[i].enabled = false;
-
+        for (int i = cells; i < 3; i++) chargedCells[i].enabled = false;
     }
 
     public void UpdateFuelGauge(float fuelPercentage) {

@@ -12,7 +12,6 @@ public class PartPrinter : MonoBehaviour {
 
     [SerializeField] float printTime = 2f;
     [SerializeField] Transform printPoint;
-    [SerializeField] GameObject[] partsAvailable; // TODO: This should be in a list, added by blueprints
     [SerializeField] Material printMaterial;
 
     MeshRenderer meshRenderer;
@@ -22,27 +21,11 @@ public class PartPrinter : MonoBehaviour {
     float opacity = 0f;
 
     private void Start() {
-        if (!printPoint) {
-            Debug.LogError("PartPrinter: No print point set");
-        }
-
-        if (!printMaterial) {
-            Debug.LogError("PartPrinter: No print material set");
-        }
+        if (!printPoint) Debug.LogError("PartPrinter: No print point set");
+        if (!printMaterial) Debug.LogError("PartPrinter: No print material set");
     }
 
     void Update () {
-        // TODO: This is just for testing
-		if (Input.GetKeyDown(KeyCode.Alpha1)) {
-            StartCoroutine(PrintPart(partsAvailable[0]));
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha2)) {
-            StartCoroutine(PrintPart(partsAvailable[1]));
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha3)) {
-            StartCoroutine(PrintPart(partsAvailable[2]));
-        }
-
         // TODO: This should probably be in a shader
         if (newPart) {
             opacity += Time.deltaTime / printTime;
@@ -50,6 +33,16 @@ public class PartPrinter : MonoBehaviour {
                 mat.color = new Color(mat.color.r, mat.color.g, mat.color.b, opacity);
             }
         }
+    }
+
+    public void ProcessPrintSignal(Vector2Int index) {
+        int prefabIndex;
+
+        if (index.x < PartPrinterData.MODULE_TYPES) prefabIndex = index.x * 3 + index.y;
+        else prefabIndex = 9;
+
+        Debug.Log("PartPrinter: Print request for index " + index + " / " + prefabIndex);
+        StartCoroutine(PrintPart(PartPrinterData.instance.modulePrefabs[prefabIndex]));
     }
 
     void OnTriggerStay(Collider other) {

@@ -22,7 +22,6 @@ public class Ship : MonoBehaviour, IControllable, IUsable, IPowerable {
     [Header("Flight")]
     [SerializeField] float yawMultiplier = 0.5f;
     [SerializeField] float astroThrottleSensitivity = 0.5f;
-    [SerializeField] float maximumSpeed = 300f;
 
     [Header("Camera")]
     [SerializeField] Transform playerExit;
@@ -153,7 +152,6 @@ public class Ship : MonoBehaviour, IControllable, IUsable, IPowerable {
         } else if (controlObject.interact && !busy) StartCoroutine("ExitShip");
 
         // Shield Cells
-        if (controlObject.attachShieldCell && fuelPack) fuelPack.AttachShieldCell();
         if (controlObject.chargeShieldCell && fuelPack) fuelPack.ChargeShields();
 
         // Camera
@@ -202,7 +200,7 @@ public class Ship : MonoBehaviour, IControllable, IUsable, IPowerable {
                 break;
         }
 
-        rb.velocity = Vector3.ClampMagnitude(rb.velocity, maximumSpeed);
+        rb.velocity = Vector3.ClampMagnitude(rb.velocity, SceneManager.MAX_PLAYER_SPEED);
     }
 
     void ChangeAssistMode(GameTypes.AssistMode mode) {
@@ -271,6 +269,7 @@ public class Ship : MonoBehaviour, IControllable, IUsable, IPowerable {
     public void Use() {
         if (!FindObjectOfType<Player>().GetComponentInChildren<ModuleSlot>().connectedModule) {
             PlayerControl.instance.TakeControl(this);
+            PlayerHUD.instance.UpdateShipRadar(0);
 
             if (!busy) StartCoroutine("EnterShip");
 
@@ -290,6 +289,8 @@ public class Ship : MonoBehaviour, IControllable, IUsable, IPowerable {
             rb.angularDrag = 2f;
 
             // Computer
+            shipComputer.UpdateThrottleGauge(0f);
+            shipComputer.UpdateFuelGauge(0f);
             shipComputer.TogglePower(true);
 
             // Light
@@ -342,7 +343,7 @@ public class Ship : MonoBehaviour, IControllable, IUsable, IPowerable {
         busy = true;
         spaceParticles.Play();
 
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.75f);
 
         Canopy canopy = GetComponentInChildren<Canopy>();
         if (canopy.IsOpen()) canopy.Use();
@@ -363,7 +364,7 @@ public class Ship : MonoBehaviour, IControllable, IUsable, IPowerable {
         if (PlayerCamera.instance.IsThirdPerson()) PlayerCamera.instance.FirstPerson();
         freeLook = false;
 
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.75f);
 
         SceneManager.instance.SpawnPlayer(playerExit, rb.velocity);
         spaceParticles.Stop();

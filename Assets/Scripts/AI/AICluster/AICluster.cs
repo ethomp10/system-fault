@@ -16,6 +16,12 @@ public class AICluster : MonoBehaviour {
 	[SerializeField] List<GameObject> asteroids;
 	[SerializeField] float boundingRadius = 0.0f;
 	[SerializeField] bool debug;
+	[SerializeField] bool debugHeading;
+	[SerializeField] bool debugCohesion;
+	[SerializeField] bool debugSeparation;
+	[SerializeField] bool debugAlignment;
+	[SerializeField] bool debugAttraction;
+	[SerializeField] bool debugBounding;
 	float planetRadius = 0.0f;
 	List<Vector3> attractorPositions;
 	List<float> attractorScales;
@@ -41,7 +47,7 @@ public class AICluster : MonoBehaviour {
 			bounds.Encapsulate(r.bounds);
 		}
 
-		boundingRadius = bounds.extents.magnitude / 1.5f;
+		boundingRadius = bounds.extents.magnitude * 1.0f;
 
 		Vector3 clusterPosition = new Vector3(Random.Range(0.0f, 1.0f), Random.Range(0.0f, 1.0f), Random.Range(0.0f, 1.0f));
 		clusterPosition = clusterPosition * boundingRadius;
@@ -55,13 +61,13 @@ public class AICluster : MonoBehaviour {
 		//attractorPositions.Add(transform.position);
 		//attractorScales.Add(boundingRadius);
 		separatorPositions.Add(transform.position);
-		separatorScales.Add(planetRadius);
+		separatorScales.Add(planetRadius * 2);
 
 		for(int i = 0; i < asteroids.Count; i++){
 			attractorPositions.Add(asteroids[i].transform.position);
 			attractorScales.Add(asteroids[i].transform.localScale.x * 10);
 			separatorPositions.Add(asteroids[i].transform.position);
-			separatorScales.Add(asteroids[i].transform.localScale.x);
+			separatorScales.Add(asteroids[i].transform.localScale.x * 2);
 		}
 	}
 
@@ -74,10 +80,11 @@ public class AICluster : MonoBehaviour {
 			velocities.Add(xroms[i].transform.GetComponent<Rigidbody>().velocity);
 		}
 
-		Vector3[] headings = FlockingManager.Headings(positions.ToArray(), velocities.ToArray(), attractorPositions.ToArray(), attractorScales.ToArray(), separatorPositions.ToArray(), separatorScales.ToArray(), transform.position, boundingRadius, 50.0f, 4, debug);
+		Vector3[] headings = FlockingManager.Headings(positions.ToArray(), velocities.ToArray(), attractorPositions.ToArray(), attractorScales.ToArray(), separatorPositions.ToArray(), separatorScales.ToArray(), transform.position, boundingRadius, 50.0f, 4, debug, debugHeading, debugCohesion, debugSeparation, debugAlignment, debugAttraction, debugBounding);
 	
 		for(int i = 0; i < xroms.Count && i < headings.Length; i++){
-			xroms[i].GetComponent<Xrom>().Move(headings[i]);
+			xroms[i].GetComponent<Xrom>().Move(headings[i], debug && debugHeading);
+			xroms[i].GetComponent<Xrom>().Rotate(xroms, 50.0f);
 		}
 	}
 }

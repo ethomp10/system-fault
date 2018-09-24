@@ -9,23 +9,21 @@
 
 public class TreeKnocker : MonoBehaviour {
 
+    [SerializeField] GameObject brokenTree;
+    [SerializeField] GameObject stump;
+
     static float speedTolerance = 50f;
     static float massTolerance = 50f;
 
     void OnCollisionEnter(Collision collision) {
         if (collision.rigidbody.mass > massTolerance && collision.relativeVelocity.magnitude > speedTolerance && !GetComponent<Rigidbody>()) {
-            // Add Rigidbody
-            Rigidbody rb = gameObject.AddComponent<Rigidbody>();
-            rb.mass = 50f;
-            rb.velocity = collision.relativeVelocity;
-            SceneManager.instance.AddGravityBody(rb);
+            Instantiate(stump, transform.position, transform.rotation).transform.localScale = transform.localScale;
+            Rigidbody treeRB = Instantiate(brokenTree, transform.position, transform.rotation).GetComponent<Rigidbody>();
+            treeRB.velocity = collision.relativeVelocity;
+            treeRB.transform.localScale = transform.localScale;
+            SceneManager.instance.AddGravityBody(treeRB);
 
-            // Add box collider to prevent excessive rolling
-            BoxCollider bc = gameObject.AddComponent<BoxCollider>();
-            bc.center = new Vector3(0f, 3f, 0f);
-            bc.size = new Vector3(0.7f, 0.7f, 0.7f);
-
-            Destroy(this);
+            Destroy(gameObject);
         }
     }
 }

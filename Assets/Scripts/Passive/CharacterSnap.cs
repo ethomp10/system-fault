@@ -13,8 +13,8 @@ public class CharacterSnap : MonoBehaviour, ISnappable {
 
     [SerializeField] float snapSpeed = 3f;
 
-    Vector3? snapPoint = null;  // For planet snapping
-    Vector3? snapUp = null;     // For room snapping
+    Transform snapPoint = null;     // For planet snapping
+    Vector3? snapUp = null;         // For room snapping
 
     Rigidbody rb;
 
@@ -22,8 +22,8 @@ public class CharacterSnap : MonoBehaviour, ISnappable {
         rb = GetComponent<Rigidbody>();
     }
 
-    public void SnapToPoint(Vector3 point) {
-        Vector3 up = (transform.position - point).normalized;
+    public void SnapToPoint(Transform point) {
+        Vector3 up = (transform.position - point.position).normalized;
 
         Quaternion targetRotation = Quaternion.FromToRotation(transform.up, up) * transform.rotation;
         rb.MoveRotation(Quaternion.Slerp(rb.rotation, targetRotation, snapSpeed * Time.fixedDeltaTime));
@@ -38,11 +38,11 @@ public class CharacterSnap : MonoBehaviour, ISnappable {
         if ((snapPoint != null && snapUp != null) || (snapPoint == null && snapUp != null)) {
             SnapToVector(snapUp.Value);
         } else if (snapPoint != null && snapUp == null) {
-            SnapToPoint(snapPoint.Value);
+            SnapToPoint(snapPoint);
         }
     }
 
-    public void SetSnapPoint(Vector3 point) {
+    public void SetSnapPoint(Transform point) {
         snapPoint = point;
         CheckPlayerSnapStatus();
     }

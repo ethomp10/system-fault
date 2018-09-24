@@ -10,15 +10,15 @@
 [ExecuteInEditMode]
 public class PropSnap : MonoBehaviour, ISnappable {
 
-    public void SnapToPoint(Vector3 point) {
-        Vector3 up = (transform.position - point).normalized;
+    public void SnapToPoint(Transform point) {
+        Vector3 up = (transform.position - point.position).normalized;
 
         transform.rotation = Quaternion.FromToRotation(transform.up, up) * transform.rotation;
     }
 
     void Update () {
         #if UNITY_EDITOR
-        if (!Application.isPlaying && transform.parent != null) SnapToPoint(transform.parent.position);
+        if (!Application.isPlaying && transform.parent != null) SnapToPoint(transform.parent);
         #endif
     }
 }

@@ -12,28 +12,20 @@ public class GroundCheck : MonoBehaviour {
     IGroundable groundable;
     int colliders;
 
-	void Start () {
+	void Awake () {
         groundable = GetComponentInParent<IGroundable>();
         if (groundable == null) {
             Debug.LogError("Ground Check: No IGroundable set as parent");
         }
 	}
 	
-    void OnTriggerEnter(Collider other) {
-        if (!other.isTrigger || other.GetComponent<IMaterializeable>() != null) {
-            colliders++;
-            if (colliders == 1) {
-                groundable.SetGrounded(true);
-            }
+    void OnTriggerStay(Collider other) {
+        if (!other.isTrigger) {
+            groundable.SetGrounded(true);
         }
     }
 
     void OnTriggerExit(Collider other) {
-        if (!other.isTrigger || other.GetComponent<IMaterializeable>() != null) {
-            colliders--;
-            if (colliders == 0) {
-                groundable.SetGrounded(false);
-            }
-        }
+        groundable.SetGrounded(false);
     }
 }

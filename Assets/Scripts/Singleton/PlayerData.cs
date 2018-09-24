@@ -10,7 +10,6 @@
 public class PlayerData : MonoBehaviour {
 
     public static PlayerData instance = null;
-    private int shieldCells = 0;
 
     void Awake() {
         if (instance == null)
@@ -19,17 +18,5 @@ public class PlayerData : MonoBehaviour {
             Destroy(gameObject);
 
         DontDestroyOnLoad(gameObject);
-    }
-
-    public void PickupShieldCell() {
-        shieldCells++;
-        Debug.Log("PlayerData: Shield cells: " + shieldCells);
-    }
-
-    public bool DropShieldCell() {
-        if (shieldCells > 0) {
-            shieldCells--;
-            return true;
-        } else return false;
     }
 }

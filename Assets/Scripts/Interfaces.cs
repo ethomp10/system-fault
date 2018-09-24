@@ -8,7 +8,7 @@
 //
 
 public interface ISnappable {
-    void SnapToPoint(Vector3 point);
+    void SnapToPoint(Transform point);
 }
 
 public interface IMaterializeable {
