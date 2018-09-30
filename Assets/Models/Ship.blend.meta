@@ -14,6 +14,7 @@ ModelImporter:
     100016: Boosters
     100018: LandingGear
     100020: Light
+    100022: QuantumDrive
     400000: //RootNode
     400002: Canopy
     400004: Ship
@@ -25,6 +26,7 @@ ModelImporter:
     400016: Boosters
     400018: LandingGear
     400020: Light
+    400022: QuantumDrive
     2100000: RedPaint
     2100002: Metal
     2100004: Cushion
@@ -42,6 +44,7 @@ ModelImporter:
     2300014: Thrusters
     2300016: Boosters
     2300018: LandingGear
+    2300020: QuantumDrive
     3300000: //RootNode
     3300002: Canopy
     3300004: Ship
@@ -52,6 +55,7 @@ ModelImporter:
     3300014: Thrusters
     3300016: Boosters
     3300018: LandingGear
+    3300020: QuantumDrive
     4300000: Ship
     4300002: Canopy
     4300004: FuelPack
@@ -62,6 +66,7 @@ ModelImporter:
     4300014: Boosters
     4300016: LandingGear
     4300018: Light
+    4300020: QuantumDrive
     7400000: Default Take
     9500000: //RootNode
     13700000: LandingGear

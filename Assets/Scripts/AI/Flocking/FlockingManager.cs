@@ -31,6 +31,18 @@ public static class FlockingManager {
 		return newHeadings.ToArray();
 	}
 
+	public static Vector3 Rotation(Vector3[] rotations){
+		Vector3 avg = Vector3.zero;
+
+		foreach(Vector3 rotation in rotations){
+			avg += rotation;
+		}
+
+		avg = avg / rotations.Length;
+
+		return avg;
+	}
+
 	private static Vector3[] Cohesion(Vector3[] positions, float perceptiveDistance, int flockSize, bool debug){
 
 		List<Vector3> cohesionVectors = new List<Vector3>();

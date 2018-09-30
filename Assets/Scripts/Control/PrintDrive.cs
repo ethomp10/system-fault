@@ -23,6 +23,7 @@ public class PrintDrive : MonoBehaviour, IControllable {
     [SerializeField] Image fuelPack;
     [SerializeField] Image thrusters;
     [SerializeField] Image boosters;
+    [SerializeField] Image quantumDrive;
 
     [SerializeField] Image tier1;
     [SerializeField] Image tier2;
@@ -70,6 +71,7 @@ public class PrintDrive : MonoBehaviour, IControllable {
         fuelPack.enabled = false;
         thrusters.enabled = false;
         boosters.enabled = false;
+        quantumDrive.enabled = false;
 
         switch (module) {
             case GameTypes.ModuleType.FuelPack:
@@ -80,6 +82,9 @@ public class PrintDrive : MonoBehaviour, IControllable {
                 break;
             case GameTypes.ModuleType.Boosters:
                 boosters.enabled = true;
+                break;
+            case GameTypes.ModuleType.QuantumDrive:
+                quantumDrive.enabled = true;
                 break;
         }
     }

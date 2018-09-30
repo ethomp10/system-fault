@@ -73,10 +73,12 @@ public class AICluster : MonoBehaviour {
 
 	void FixedUpdate(){
 		List<Vector3> positions = new List<Vector3>();
+		List<Vector3> rotations = new List<Vector3>();
 		List<Vector3> velocities = new List<Vector3>();
 
 		for(int i = 0; i < xroms.Count; i++){
 			positions.Add(xroms[i].transform.position);
+			rotations.Add(xroms[i].transform.rotation.eulerAngles);
 			velocities.Add(xroms[i].transform.GetComponent<Rigidbody>().velocity);
 		}
 
@@ -84,7 +86,12 @@ public class AICluster : MonoBehaviour {
 	
 		for(int i = 0; i < xroms.Count && i < headings.Length; i++){
 			xroms[i].GetComponent<Xrom>().Move(headings[i], debug && debugHeading);
-			xroms[i].GetComponent<Xrom>().Rotate(xroms, 50.0f);
+		}
+
+		Vector3 avgRotation = FlockingManager.Rotation(rotations.ToArray());
+
+		foreach(GameObject xrom in xroms){
+			xrom.GetComponent<Xrom>().Rotate(avgRotation);
 		}
 	}
 }
