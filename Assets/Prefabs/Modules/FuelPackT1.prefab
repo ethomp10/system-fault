@@ -72,8 +72,8 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1103038458942422}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0.0679566, y: 0.74837387, z: -0.37523818, w: -0.5426922}
+  m_LocalPosition: {x: -419.53, y: -240.34, z: -128.89}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 224199093339589276}
@@ -95,9 +95,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RenderingLayerMask: 4294967295
   m_Materials:
-  - {fileID: 2100000, guid: 47e76139f8a743a479871152357ad14f, type: 2}
-  - {fileID: 2100000, guid: 4060427e387578d4a9f5d6c5609c95d2, type: 2}
   - {fileID: 2100000, guid: 196ea116280e07c47af39128ebf55eed, type: 2}
+  - {fileID: 2100000, guid: 4060427e387578d4a9f5d6c5609c95d2, type: 2}
+  - {fileID: 2100000, guid: b43751fb8d810884da2bced69096bdd5, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -299,5 +299,5 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 10, y: 20}
+  m_SizeDelta: {x: 5.5, y: 22}
   m_Pivot: {x: 0.5, y: 0.5}

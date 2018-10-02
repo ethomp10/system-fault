@@ -13,6 +13,8 @@ public class PartPrinterData : MonoBehaviour {
 
     public GameObject[] modulePrefabs;
     public GameObject printDrivePrefab;
+    public Material printMaterial;
+    public float printTime = 2f;
     public float[] printCosts;
 
     public const int MODULE_TYPES = 6;
@@ -23,6 +25,8 @@ public class PartPrinterData : MonoBehaviour {
     void Awake() {
         if (instance == null) instance = this;
         else if (instance != this) Destroy(gameObject);
+
+        if (!printMaterial) Debug.LogError("PartPrinterData: No print material set");
 
         DontDestroyOnLoad(gameObject);
     }

@@ -28,9 +28,14 @@ public class PlayerHUD : MonoBehaviour {
     [SerializeField] Image[] chargedCells;
 
     [Header("Radar")]
-    [SerializeField] GameObject radar;
+    [SerializeField] GameObject shipRadar;
     [SerializeField] Image shipLeft;
     [SerializeField] Image shipRight;
+    [SerializeField] GameObject planetRadar;
+    [SerializeField] Image planetLeft;
+    [SerializeField] Image planetRight;
+    [SerializeField] Image planetUp;
+    [SerializeField] Image planetDown;
 
     bool animateDamage = false;
 
@@ -47,6 +52,7 @@ public class PlayerHUD : MonoBehaviour {
         if (!fuelPackHUD) Debug.LogError("PlayerHUD: Fuel pack HUD not set");
 
         DisableFuelPackHUD();
+        TogglePlanetRadar(false);
     }
 
     void Update() {
@@ -75,8 +81,13 @@ public class PlayerHUD : MonoBehaviour {
     }
 
     public void ToggleShipRadar(bool show) {
-        if (show) radar.SetActive(true);
-        else radar.SetActive(false);
+        if (show) shipRadar.SetActive(true);
+        else shipRadar.SetActive(false);
+    }
+
+    public void TogglePlanetRadar(bool show) {
+        if (show) planetRadar.SetActive(true);
+        else planetRadar.SetActive(false);
     }
 
     public void UpdateShipRadar(int direction) {
@@ -94,7 +105,39 @@ public class PlayerHUD : MonoBehaviour {
                 shipRight.enabled = true;
                 break;
             default:
-                Debug.LogError("PlayerHUD: Invalid argument passed to UpdateRadar");
+                Debug.LogError("PlayerHUD: Invalid argument passed to UpdateShipRadar");
+                break;
+        }
+    }
+
+    public void UpdatePlanetRadar(int rightLeft, int upDown) {
+        switch (rightLeft) {
+            case 1:
+                planetLeft.enabled = false;
+                planetRight.enabled = true;
+                break;
+            case -1:
+                planetLeft.enabled = true;
+                planetRight.enabled = false;
+                break;
+            case 0:
+                planetLeft.enabled = true;
+                planetRight.enabled = true;
+                break;
+        }
+
+        switch (upDown) {
+            case 1:
+                planetUp.enabled = true;
+                planetDown.enabled = false;
+                break;
+            case -1:
+                planetUp.enabled = false;
+                planetDown.enabled = true;
+                break;
+            case 0:
+                planetUp.enabled = true;
+                planetDown.enabled = true;
                 break;
         }
     }

@@ -9,6 +9,7 @@
 
 public class Boosters : ShipModule, IPowerable {
 
+    [Header("Booster Specs")]
     [SerializeField] float acceleration = 30f;
     [SerializeField] float torqueAcceleration = 3f;
     public float maxHoverSpeed = 10f;
@@ -18,9 +19,11 @@ public class Boosters : ShipModule, IPowerable {
     float throttleHorizontal, throttleVertical;
     Vector3 throttleTorque;
 
+    [Header("Trails")]
     TrailRenderer[] trails;
     bool trailsEmitting = false;
 
+    [Header("Engine Glow")]
     [SerializeField] Material onMaterial;
     [SerializeField] Material offMaterial;
     Light[] engineLights;
@@ -73,11 +76,11 @@ public class Boosters : ShipModule, IPowerable {
         Material[] mats = mesh.materials;
 
         if (toggle) {
-            foreach (Light light in engineLights) light.enabled = true;
-            mats[2] = onMaterial;
+            foreach (Light engineLight in engineLights) engineLight.enabled = true;
+            mats[0] = onMaterial;
         } else {
-            foreach (Light light in engineLights) light.enabled = false;
-            mats[2] = offMaterial;
+            foreach (Light engineLight in engineLights) engineLight.enabled = false;
+            mats[0] = offMaterial;
             ResetThrottles();
         }
 

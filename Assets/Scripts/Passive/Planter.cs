@@ -11,6 +11,6 @@ public class Planter : MonoBehaviour {
     public GameObject[] objectPrefabs;
     public float minimumScale = 0.6f;
     public float maximumScale = 1.2f;
-    [Range(1, 10)] public float density = 5f;
+    [Range(0f, 10f)] public float density = 5f;
     public LayerMask densityLayer;
 }

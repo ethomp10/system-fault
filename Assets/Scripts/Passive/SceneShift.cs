@@ -10,7 +10,7 @@
 public class SceneShift : MonoBehaviour {
 
     // Public
-    public float threshold = 1000.0f;
+    public float threshold = 1000f;
 
     // Private
     Transform[] objects;

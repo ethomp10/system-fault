@@ -85,7 +85,7 @@ GameObject:
   - component: {fileID: 4424878144065032}
   - component: {fileID: 33520626344043298}
   - component: {fileID: 23983699354705050}
-  - component: {fileID: 65255267282823526}
+  - component: {fileID: 64259908449283650}
   - component: {fileID: 114367593958653938}
   - component: {fileID: 54294746983056134}
   m_Layer: 9
@@ -114,8 +114,8 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1982866951862120}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: 0.14701995, y: 0.7720051, z: -0.4162403, w: -0.4573153}
+  m_LocalPosition: {x: -413.82, y: -254.69, z: -120.28}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4886110514704948}
@@ -179,9 +179,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RenderingLayerMask: 4294967295
   m_Materials:
-  - {fileID: 2100000, guid: 47e76139f8a743a479871152357ad14f, type: 2}
-  - {fileID: 2100000, guid: 4060427e387578d4a9f5d6c5609c95d2, type: 2}
   - {fileID: 2100000, guid: 196ea116280e07c47af39128ebf55eed, type: 2}
+  - {fileID: 2100000, guid: 4060427e387578d4a9f5d6c5609c95d2, type: 2}
+  - {fileID: 2100000, guid: b43751fb8d810884da2bced69096bdd5, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -223,8 +223,8 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!65 &65255267282823526
-BoxCollider:
+--- !u!64 &64259908449283650
+MeshCollider:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
@@ -232,9 +232,11 @@ BoxCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 11.036605, y: 2.604621, z: 1.168541}
-  m_Center: {x: 0, y: 0.08186549, z: 0.01690349}
+  serializedVersion: 3
+  m_Convex: 1
+  m_CookingOptions: 14
+  m_SkinWidth: 0.01
+  m_Mesh: {fileID: 4300014, guid: cd811a82754cafd41a44b2b626f56de0, type: 3}
 --- !u!96 &96017980929558212
 TrailRenderer:
   serializedVersion: 2

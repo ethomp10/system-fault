@@ -21,10 +21,12 @@ public class PlayerCamera : MonoBehaviour {
     [SerializeField] Vector3 shipOffset;
 
     [Header("Raycasting")]
-    [SerializeField] LayerMask materializeMask;
-    [SerializeField] LayerMask useMask;
     [SerializeField] float usableUIPromptRange = 5f;
     [SerializeField] float dematUIPromptRange = 5f;
+
+    LayerMask materializeMask;
+    LayerMask useMask;
+    LayerMask quantumMask;
 
     [HideInInspector] public bool checkForUsable;
     [HideInInspector] public bool checkForMaterializable;
@@ -39,6 +41,10 @@ public class PlayerCamera : MonoBehaviour {
             Destroy(gameObject);
 
         DontDestroyOnLoad(gameObject);
+
+        materializeMask = LayerMask.GetMask("Materializable");
+        useMask = LayerMask.GetMask("Usable");
+        quantumMask = LayerMask.GetMask("Celestial");
     }
 
     void Start() {
@@ -54,6 +60,10 @@ public class PlayerCamera : MonoBehaviour {
 
     public RaycastHit? GetMaterializableTarget(float range) {
         return targetingSystem.Target(range, materializeMask);
+    }
+
+    public RaycastHit? GetQuantumTarget(float range) {
+        return targetingSystem.Target(range, quantumMask);
     }
 
     // TODO: Remove this probably

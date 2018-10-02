@@ -16,6 +16,7 @@ public class Ship : MonoBehaviour, IControllable, IUsable, IPowerable {
     FuelPack fuelPack = null;
     Thrusters thrusters = null;
     Boosters boosters = null;
+    QuantumDrive quantumDrive = null;
 
     LandingGear landingGear;
 
@@ -70,53 +71,61 @@ public class Ship : MonoBehaviour, IControllable, IUsable, IPowerable {
 
     public void CheckInput(ControlObject controlObject) {
         // Toggle Power
-        if (controlObject.jump) {
+        if (controlObject.jump && assistMode != GameTypes.AssistMode.Quantum) {
             if (powered) TogglePower(false);
             else if (!powered && FuelAvailable() && !busy) TogglePower(true);
         }
 
         if (powered) {
             if (FuelAvailable()) {
-                // Module Control
-                foreach (ModuleSlot slot in moduleSlots) {
-                    if (thrusters) {
-                        switch (assistMode) {
-                            case GameTypes.AssistMode.NoAssist:
-                                thrusters.SetThrottle(controlObject.forwardBack);
-                                shipComputer.UpdateThrottleGauge(thrusters.GetThrottle());
-                                fuelPack.DrainFuel(Mathf.Abs(thrusters.GetThrottle()) / thrusters.efficiency * Time.deltaTime);
-                                break;
-                            case GameTypes.AssistMode.Hover:
-                                thrusters.SetThrottle(controlObject.forwardBack/2f);
-                                shipComputer.UpdateThrottleGauge(thrusters.GetThrottle());
-                                fuelPack.DrainFuel(Mathf.Abs(thrusters.GetThrottle() / thrusters.efficiency * Time.deltaTime));
-                                break;
-                            case GameTypes.AssistMode.Astro:
-                                thrusters.AdjustAstroThrottle(controlObject.forwardBack * astroThrottleSensitivity * Time.deltaTime);
-                                shipComputer.UpdateThrottleGauge(thrusters.GetAstroThrottle());
-                                fuelPack.DrainFuel(thrusters.GetAstroFuel() * Time.deltaTime);
-                                break;
-                        }
+                // Thruster control
+                if (thrusters) {
+                    switch (assistMode) {
+                        case GameTypes.AssistMode.NoAssist:
+                            thrusters.SetThrottle(controlObject.forwardBack);
+                            shipComputer.UpdateThrottleGauge(thrusters.GetThrottle());
+                            fuelPack.DrainFuel(Mathf.Abs(thrusters.GetThrottle()) / thrusters.efficiency * Time.deltaTime);
+                            break;
+                        case GameTypes.AssistMode.Hover:
+                            thrusters.SetThrottle(controlObject.forwardBack/2f);
+                            shipComputer.UpdateThrottleGauge(thrusters.GetThrottle());
+                            fuelPack.DrainFuel(Mathf.Abs(thrusters.GetThrottle() / thrusters.efficiency * Time.deltaTime));
+                            break;
+                        case GameTypes.AssistMode.Astro:
+                            thrusters.AdjustAstroThrottle(controlObject.forwardBack * astroThrottleSensitivity * Time.deltaTime);
+                            shipComputer.UpdateThrottleGauge(thrusters.GetAstroThrottle());
+                            fuelPack.DrainFuel(thrusters.GetAstroFuel() * Time.deltaTime);
+                            break;
                     }
+                }
 
-                    if (boosters) {
-                        Vector3 torque;
-                        if (!freeLook) torque = new Vector3(-controlObject.verticalLook, controlObject.horizontalLook * yawMultiplier, controlObject.roll);
-                        else torque = new Vector3(0f, 0f, controlObject.roll);
+                // Booster control
+                if (boosters) {
+                    Vector3 torque;
+                    if (!freeLook) torque = new Vector3(-controlObject.verticalLook, controlObject.horizontalLook * yawMultiplier, controlObject.roll);
+                    else torque = new Vector3(0f, 0f, controlObject.roll);
 
-                        switch (assistMode) {
-                            case GameTypes.AssistMode.NoAssist:
-                            case GameTypes.AssistMode.Astro:
-                                boosters.SetThrottle(controlObject.rightLeft, controlObject.upDown, torque);
-                                fuelPack.DrainFuel((Mathf.Abs(controlObject.rightLeft) + Mathf.Abs(controlObject.upDown)) / boosters.efficiency * Time.deltaTime);
-                                if (assistMode == GameTypes.AssistMode.Astro) fuelPack.DrainFuel(1f / thrusters.efficiency * Time.deltaTime); // Idle burn rate
-                                break;
-                            case GameTypes.AssistMode.Hover:
-                                boosters.SetThrottle(controlObject.rightLeft / 2f, controlObject.upDown / 2f, torque);
-                                fuelPack.DrainFuel((Mathf.Abs(controlObject.rightLeft)/2f + Mathf.Abs(controlObject.upDown))/2f / boosters.efficiency * Time.deltaTime);
-                                fuelPack.DrainFuel(1f / boosters.efficiency * Time.deltaTime); // Idle burn rate
-                                break;
-                        }
+                    switch (assistMode) {
+                        case GameTypes.AssistMode.NoAssist:
+                        case GameTypes.AssistMode.Astro:
+                            boosters.SetThrottle(controlObject.rightLeft, controlObject.upDown, torque);
+                            fuelPack.DrainFuel((Mathf.Abs(controlObject.rightLeft) + Mathf.Abs(controlObject.upDown)) / boosters.efficiency * Time.deltaTime);
+                            if (assistMode == GameTypes.AssistMode.Astro) fuelPack.DrainFuel(1f / thrusters.efficiency * Time.deltaTime); // Idle burn rate
+                            break;
+                        case GameTypes.AssistMode.Hover:
+                            boosters.SetThrottle(controlObject.rightLeft / 2f, controlObject.upDown / 2f, torque);
+                            fuelPack.DrainFuel((Mathf.Abs(controlObject.rightLeft)/2f + Mathf.Abs(controlObject.upDown))/2f / boosters.efficiency * Time.deltaTime);
+                            fuelPack.DrainFuel(1f / boosters.efficiency * Time.deltaTime); // Idle burn rate
+                            break;
+                    }
+                }
+
+                // Quantum Drive
+                if (thrusters && boosters && quantumDrive) {
+                    if (controlObject.quantumJump) quantumDrive.PickTarget();
+
+                    if (assistMode == GameTypes.AssistMode.Quantum && quantumDrive.IsJumping()) {
+                        fuelPack.DrainFuel(1f / quantumDrive.efficiency * Time.deltaTime); // Quantum burn rate
                     }
                 }
 
@@ -124,11 +133,19 @@ public class Ship : MonoBehaviour, IControllable, IUsable, IPowerable {
 
                 // Assist Modes
                 if (controlObject.changeAssist) {
-                    if (assistMode == GameTypes.AssistMode.NoAssist) ChangeAssistMode(previousAssistMode);
-                    else if (assistMode == GameTypes.AssistMode.Hover && boosters && thrusters) ChangeAssistMode(GameTypes.AssistMode.Astro);
-                    else if ((assistMode == GameTypes.AssistMode.Astro)) ChangeAssistMode(GameTypes.AssistMode.Hover);
+                    switch (assistMode) {
+                        case GameTypes.AssistMode.NoAssist:
+                            ChangeAssistMode(previousAssistMode);
+                            break;
+                        case GameTypes.AssistMode.Hover:
+                            if (boosters && thrusters) ChangeAssistMode(GameTypes.AssistMode.Astro);
+                            break;
+                        case GameTypes.AssistMode.Astro:
+                            ChangeAssistMode(GameTypes.AssistMode.Hover);
+                            break;
+                    }
                 }
-                if (controlObject.toggleAssist) {
+                if (controlObject.toggleAssist && assistMode != GameTypes.AssistMode.Quantum) {
                     if (assistMode != GameTypes.AssistMode.NoAssist) {
                         previousAssistMode = assistMode;
                         ChangeAssistMode(GameTypes.AssistMode.NoAssist);
@@ -165,6 +182,10 @@ public class Ship : MonoBehaviour, IControllable, IUsable, IPowerable {
         else ResetCameraRig();
     }
 
+    public void UpdateQuantumCountDown(int time) {
+        shipComputer.UpdateCountDown(time);
+    }
+
     void Hover() {
         rb.velocity = Vector3.Lerp(rb.velocity, Vector3.zero, boosters.hoverDampaning * Time.fixedDeltaTime);
         if (limitHoverSpeed) rb.velocity = Vector3.ClampMagnitude(rb.velocity, boosters.maxHoverSpeed);
@@ -196,11 +217,9 @@ public class Ship : MonoBehaviour, IControllable, IUsable, IPowerable {
                 break;
             case GameTypes.AssistMode.Quantum:
                 break;
-            default:
-                break;
         }
 
-        rb.velocity = Vector3.ClampMagnitude(rb.velocity, SceneManager.MAX_PLAYER_SPEED);
+        if (assistMode != GameTypes.AssistMode.Quantum) rb.velocity = Vector3.ClampMagnitude(rb.velocity, SceneManager.MAX_PLAYER_SPEED);
     }
 
     void ChangeAssistMode(GameTypes.AssistMode mode) {
@@ -208,6 +227,7 @@ public class Ship : MonoBehaviour, IControllable, IUsable, IPowerable {
             case GameTypes.AssistMode.NoAssist:
                 rb.useGravity = true;
                 if (thrusters) thrusters.SetAstroThrottle(0f);
+                if (powered) landingGear.Retract();
                 Debug.Log("Ship: Assist off");
                 break;
             case GameTypes.AssistMode.Hover:
@@ -225,6 +245,12 @@ public class Ship : MonoBehaviour, IControllable, IUsable, IPowerable {
                 Debug.Log("Ship: Astro Flight on");
                 break;
             case GameTypes.AssistMode.Quantum:
+                rb.useGravity = false;
+                thrusters.SetThrottle(0f);
+                thrusters.SetAstroThrottle(0f);
+                boosters.SetThrottle(0f, 0f, Vector3.zero);
+                landingGear.Retract();
+                Debug.Log("Ship: Quantum Flight on");
                 break;
         }
 
@@ -232,6 +258,11 @@ public class Ship : MonoBehaviour, IControllable, IUsable, IPowerable {
 
         shipComputer.ChangeAssistMode(mode);
         assistMode = mode;
+    }
+
+    public void ToggleQuantum(bool toggle) {
+        if (toggle) ChangeAssistMode(GameTypes.AssistMode.Quantum);
+        else if (powered) ChangeAssistMode(GameTypes.AssistMode.Hover);
     }
 
     public void UpdateModuleStatus(ShipModule module, GameTypes.ModuleType type, bool connected) {
@@ -263,6 +294,15 @@ public class Ship : MonoBehaviour, IControllable, IUsable, IPowerable {
                     Debug.Log("Ship: Boosters disconnected");
                 }
                 break;
+            case GameTypes.ModuleType.QuantumDrive:
+                if (connected) {
+                    quantumDrive = module.GetComponent<QuantumDrive>();
+                    Debug.Log("Ship: Quantum Drive connected");
+                } else {
+                    quantumDrive = null;
+                    Debug.Log("Ship: Quantum Drive disconnected");
+                }
+                break;
         }
     }
 
@@ -280,12 +320,16 @@ public class Ship : MonoBehaviour, IControllable, IUsable, IPowerable {
 
     public void TogglePower(bool toggle) {
         if (toggle) {
+            powered = true;
+
             // Assist & Modules
             if (boosters) {
                 boosters.TogglePower(true);
                 ChangeAssistMode(GameTypes.AssistMode.Hover);
             }
             if (thrusters) thrusters.TogglePower(true);
+            if (quantumDrive) quantumDrive.TogglePower(true);
+
             rb.angularDrag = 2f;
 
             // Computer
@@ -296,14 +340,16 @@ public class Ship : MonoBehaviour, IControllable, IUsable, IPowerable {
             // Light
             if (lightOn) shipLight.TogglePower(true);
 
-            powered = true;
             Debug.Log("Ship: Powered on");
         } else {
+            powered = false;
+
             // Assist & Modules
             ChangeAssistMode(GameTypes.AssistMode.NoAssist);
             rb.angularDrag = 0f;
             if (boosters) boosters.TogglePower(false);
             if (thrusters) thrusters.TogglePower(false);
+            if (quantumDrive) quantumDrive.TogglePower(false);
 
             // Computer
             shipComputer.UpdateThrottleGauge(0f);
@@ -313,7 +359,6 @@ public class Ship : MonoBehaviour, IControllable, IUsable, IPowerable {
             // Light
             shipLight.TogglePower(false);
 
-            powered = false;
             Debug.Log("Ship: Powered off");
         }
     }

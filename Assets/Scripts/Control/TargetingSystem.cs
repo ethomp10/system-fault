@@ -11,8 +11,7 @@
 
 public class TargetingSystem : MonoBehaviour {
 
-    public IUsable usableTarget = null;
-    private Camera cam;
+    Camera cam;
     
     public void Start() {
         cam = GetComponent<Camera>();
@@ -24,9 +23,8 @@ public class TargetingSystem : MonoBehaviour {
         Debug.DrawLine(aimPoint, transform.position + cam.transform.forward * range);
 
         RaycastHit hit;
-        if (Physics.Raycast(aimPoint, cam.transform.forward, out hit, range)) {
-            return hit;
-        } else return null;
+        if (Physics.Raycast(aimPoint, cam.transform.forward, out hit, range)) return hit;
+        return null;
     }
 
     public RaycastHit? Target(float range, LayerMask mask) {
@@ -35,8 +33,7 @@ public class TargetingSystem : MonoBehaviour {
         Debug.DrawLine(aimPoint, transform.position + cam.transform.forward * range);
 
         RaycastHit hit;
-        if (Physics.Raycast(aimPoint, cam.transform.forward, out hit, range, mask)) {
-            return hit;
-        } else return null;
+        if (Physics.Raycast(aimPoint, cam.transform.forward, out hit, range, mask)) return hit;
+        return null;
     }
 }

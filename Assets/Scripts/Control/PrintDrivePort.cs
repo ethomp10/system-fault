@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections;
 
 //
 // PrintDrivePort.cs
@@ -9,17 +10,21 @@
 
 public class PrintDrivePort : MonoBehaviour, IUsable {
 
+    [SerializeField] PartPrinter printer;
     [SerializeField] Transform playerReset;
+    [SerializeField] Material disabledMaterial;
 
-    PartPrinter printer;
     PrintDrive printDrive = null;
     static float insertionSpeed = 1.5f;
+
+    Blueprint blueprint = null;
+    static float blueprintDisplayTime = 3f;
 
     Vector3 desiredLocation;
     bool driveConnected = false;
 
     void Awake() {
-        printer = GetComponentInParent<PartPrinter>();
+        blueprint = GetComponent<Blueprint>();
     }
 
     public void Use() {
@@ -40,28 +45,38 @@ public class PrintDrivePort : MonoBehaviour, IUsable {
             if (desiredLocation != Vector3.zero && printDrive.transform.localPosition == desiredLocation) {
                 Destroy(printDrive.gameObject);
                 printDrive = null;
+                if (blueprint) {
+                    gameObject.layer = LayerMask.GetMask("Default");
+                    Destroy(blueprint);
+                    Destroy(this);
+                }
             }
         }
     }
 
     void ConnectDrive() {
-        PlayerHUD.instance.ToggleCrosshair(false);
-        PlayerHUD.instance.ToggleShipRadar(false);
-        PlayerHUD.instance.ToggleUsePrompt(false);
-        PlayerHUD.instance.ToggleDematPrompt(false);
-
-        PlayerCamera.instance.checkForUsable = false;
-        PlayerCamera.instance.checkForMaterializable = false;
-
-        PlayerControl.instance.TakeControl(printDrive.GetComponent<IControllable>());
-
-        Player currentPlayer = FindObjectOfType<Player>();
-        currentPlayer.ResetPlayer(playerReset);
-        if (currentPlayer.GetComponentInChildren<ModuleSlot>().connectedModule) {
-            currentPlayer.GetComponentInChildren<FuelPack>().ShowPack(false);
-        }
-
         printDrive.PowerScreen(true);
+
+        if (blueprint) {
+            blueprint.Unlock(printDrive);
+            StartCoroutine("BlueprintTimer");
+        } else {
+            PlayerHUD.instance.ToggleCrosshair(false);
+            PlayerHUD.instance.ToggleShipRadar(false);
+            PlayerHUD.instance.ToggleUsePrompt(false);
+            PlayerHUD.instance.ToggleDematPrompt(false);
+
+            PlayerCamera.instance.checkForUsable = false;
+            PlayerCamera.instance.checkForMaterializable = false;
+
+            PlayerControl.instance.TakeControl(printDrive.GetComponent<IControllable>());
+
+            Player currentPlayer = FindObjectOfType<Player>();
+            currentPlayer.ResetPlayer(playerReset);
+            if (currentPlayer.GetComponentInChildren<ModuleSlot>().connectedModule) {
+                currentPlayer.GetComponentInChildren<FuelPack>().ShowPack(false);
+            }
+        }
 
         driveConnected = true;
     }
@@ -86,5 +101,19 @@ public class PrintDrivePort : MonoBehaviour, IUsable {
 
     public void SendPrintSignal(Vector2Int index) {
         printer.ProcessPrintSignal(index);
+    }
+
+    IEnumerator BlueprintTimer() {
+        yield return new WaitForSeconds(blueprintDisplayTime);
+
+        // Remove drive
+        RemovePrintDrive();
+
+        // Disable print drive
+        MeshRenderer meshRenderer = GetComponentInChildren<MeshRenderer>();
+        Material[] mats = meshRenderer.materials;
+        mats[0] = disabledMaterial;
+        mats[1] = disabledMaterial;
+        meshRenderer.materials = mats;
     }
 }

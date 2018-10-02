@@ -29,6 +29,7 @@ public class MusicPlayer : MonoBehaviour {
 
     void OnTriggerEnter(Collider other) {
         if (other.GetComponentInChildren<Camera>()) {
+            Debug.LogWarning(other);
             Debug.Log("Music Player: Music zone entered");
 
             if (source.isPlaying) {

@@ -19,6 +19,8 @@ public class ShipModule : MonoBehaviour, IMaterializeable {
     Material[] defaultMaterials;
 
     bool materialized = true;
+    bool colliding;
+
     [HideInInspector] public bool connected = false;
     [HideInInspector] public Rigidbody shipRB = null;
 
@@ -58,6 +60,18 @@ public class ShipModule : MonoBehaviour, IMaterializeable {
         for (int i = 0; i < demats.Length; i++) demats[i] = demat;
         GetComponent<MeshRenderer>().materials = demats;
         materialized = false;
+    }
+
+    void OnTriggerStay(Collider other) {
+        if (!other.isTrigger) colliding = true;
+    }
+
+    void OnTriggerExit(Collider other) {
+        if (!other.isTrigger) colliding = false;
+    }
+
+    public bool IsColliding() {
+        return colliding;
     }
 
     public bool IsMaterialized() {

@@ -69,7 +69,7 @@ GameObject:
   - component: {fileID: 4595805456743652}
   - component: {fileID: 33588041152205976}
   - component: {fileID: 23356821087078220}
-  - component: {fileID: 65251185922136384}
+  - component: {fileID: 64734216371966870}
   - component: {fileID: 54765888261348912}
   - component: {fileID: 114592933493537168}
   m_Layer: 9
@@ -140,8 +140,8 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1891818750741206}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0.29145154, y: 0.7333482, z: -0.12937899, w: -0.60043114}
+  m_LocalPosition: {x: -405.62, y: -263.17, z: -130.96}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4865670132193800}
@@ -179,9 +179,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RenderingLayerMask: 4294967295
   m_Materials:
-  - {fileID: 2100000, guid: 47e76139f8a743a479871152357ad14f, type: 2}
-  - {fileID: 2100000, guid: a2b41fac461e4604bb46bff8da46b8ff, type: 2}
   - {fileID: 2100000, guid: 196ea116280e07c47af39128ebf55eed, type: 2}
+  - {fileID: 2100000, guid: a2b41fac461e4604bb46bff8da46b8ff, type: 2}
+  - {fileID: 2100000, guid: b43751fb8d810884da2bced69096bdd5, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -223,8 +223,8 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!65 &65251185922136384
-BoxCollider:
+--- !u!64 &64734216371966870
+MeshCollider:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
@@ -232,9 +232,11 @@ BoxCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 5.686521, y: 2.9030385, z: 2.0243523}
-  m_Center: {x: -0.000015248168, y: 0.15317883, z: 0.05080454}
+  serializedVersion: 3
+  m_Convex: 1
+  m_CookingOptions: 14
+  m_SkinWidth: 0.01
+  m_Mesh: {fileID: 4300012, guid: cd811a82754cafd41a44b2b626f56de0, type: 3}
 --- !u!96 &96345785196359236
 TrailRenderer:
   serializedVersion: 2

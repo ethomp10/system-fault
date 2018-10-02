@@ -7,22 +7,19 @@
 // Purpose: Holds a blueprint index to unlock in the Print Drive
 //
 
-public class Blueprint : MonoBehaviour, IUsable {
+public class Blueprint : MonoBehaviour {
 
     [SerializeField] GameTypes.ModuleType moduleType;
     [SerializeField] [Range(1, 3)] int moduleTier;
-    [SerializeField] GameObject printDrivePrefab;
-    [SerializeField] Transform printDrivePort;
 
-    bool used = false;
+    bool unlocked;
 
-    public void Use() {
-        if (!used) {
+    public void Unlock(PrintDrive drive) {
+        if (!unlocked) {
             PartPrinterData.instance.UnlockModule(moduleType, moduleTier);
+            drive.ShowBlueprint(moduleType, moduleTier);
 
-            //Instantiate(printDrivePrefab, printDrivePort.position, printDrivePort.rotation).GetComponent<PrintDrive>().ShowBlueprint(moduleType, moduleTier);
-
-            used = true;
+            unlocked = true;
         }
     }
 }

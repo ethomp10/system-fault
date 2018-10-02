@@ -4,7 +4,7 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - PlantableSurface
+  - PlanetSurface
   - Tree
   layers:
   - Default
@@ -19,7 +19,7 @@ TagManager:
   - Materializable
   - Foliage
   - Energy
-  - 
+  - Celestial
   - 
   - 
   - 

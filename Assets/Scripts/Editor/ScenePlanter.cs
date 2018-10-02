@@ -26,7 +26,7 @@ public class ScenePlanter : Editor {
         RaycastHit hit;
         Ray ray = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
         if (Physics.Raycast(ray, out hit)) {
-            if (hit.collider.CompareTag("PlantableSurface")) {
+            if (hit.collider.CompareTag("PlanetSurface")) {
                 if (Physics.OverlapSphere(hit.point, 50f / planter.density, planter.densityLayer).Length == 0) {
                     GameObject thing = PrefabUtility.InstantiatePrefab(planter.objectPrefabs[Random.Range(0, planter.objectPrefabs.Length)]) as GameObject;
 
@@ -36,7 +36,7 @@ public class ScenePlanter : Editor {
                     thing.transform.localScale = new Vector3(scale, scale, scale);
                 }
             } else if (!hit.collider.CompareTag("Tree")) {
-                Debug.LogWarning("ScenePlanter: Not a plantable surface");
+                Debug.LogWarning("ScenePlanter: Not a planet surface");
             }
         }
     }

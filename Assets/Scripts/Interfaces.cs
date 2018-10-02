@@ -14,6 +14,7 @@ public interface ISnappable {
 public interface IMaterializeable {
     void Materialize();
     void Dematerialize(Material demat);
+    bool IsColliding();
 }
 
 public interface IPowerable {

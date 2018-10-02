@@ -9,6 +9,7 @@
 
 public class Thrusters : ShipModule, IPowerable {
 
+    [Header("Thruster Specs")]
     [SerializeField] float acceleration = 50f;
     public float maxAstroSpeed = 50f;
     public float astroAcceleration = 1f;
@@ -17,9 +18,11 @@ public class Thrusters : ShipModule, IPowerable {
     float throttle = 0f;
     float astroThrottle = 0f;
 
+    [Header("Trails")]
     TrailRenderer[] trails;
     bool trailsEmitting = false;
 
+    [Header("Engine Glow")]
     [SerializeField] Material onMaterial;
     [SerializeField] Material offMaterial;
     Light engineLight;
@@ -89,12 +92,12 @@ public class Thrusters : ShipModule, IPowerable {
 
         if (toggle) {
             engineLight.enabled = true;
-            mats[2] = onMaterial;
+            mats[0] = onMaterial;
         } else {
             SetThrottle(0f);
             SetAstroThrottle(0f);
             engineLight.enabled = false;
-            mats[2] = offMaterial;
+            mats[0] = offMaterial;
         }
 
         mesh.materials = mats;

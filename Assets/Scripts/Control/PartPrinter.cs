@@ -10,11 +10,10 @@ using System.Collections;
 
 public class PartPrinter : MonoBehaviour {
 
-    [SerializeField] float printTime = 2f;
     [SerializeField] Transform printPoint;
-    [SerializeField] Material printMaterial;
 
     MeshRenderer meshRenderer;
+    ParticleSystem[] printParticles;
 
     ShipModule newPart = null;
     bool printSurfaceClear = true;
@@ -22,13 +21,13 @@ public class PartPrinter : MonoBehaviour {
 
     private void Start() {
         if (!printPoint) Debug.LogError("PartPrinter: No print point set");
-        if (!printMaterial) Debug.LogError("PartPrinter: No print material set");
+        printParticles = GetComponentsInChildren<ParticleSystem>();
     }
 
     void Update () {
         // TODO: This should probably be in a shader
         if (newPart) {
-            opacity += Time.deltaTime / printTime;
+            opacity += Time.deltaTime / PartPrinterData.instance.printTime;
             foreach (Material mat in meshRenderer.materials) {
                 mat.color = new Color(mat.color.r, mat.color.g, mat.color.b, opacity);
             }
@@ -55,13 +54,21 @@ public class PartPrinter : MonoBehaviour {
 
     IEnumerator PrintPart(GameObject shipModule) {
         if (printSurfaceClear) {
+            foreach (ParticleSystem particleSystem in printParticles) particleSystem.Play();
+
+            yield return new WaitForSeconds(0.75f);
             newPart = Instantiate(shipModule, printPoint.position, printPoint.rotation).GetComponent<ShipModule>();
             SceneManager.instance.AddGravityBody(newPart.GetComponent<Rigidbody>());
-            newPart.Dematerialize(printMaterial);
+            newPart.Dematerialize(PartPrinterData.instance.printMaterial);
             meshRenderer = newPart.GetComponent<MeshRenderer>();
+            foreach (Material mat in meshRenderer.materials) {
+                mat.color = new Color(mat.color.r, mat.color.g, mat.color.b, opacity);
+            }
 
-            yield return new WaitForSeconds(printTime);
+            yield return new WaitForSeconds(PartPrinterData.instance.printTime);
+            foreach (ParticleSystem particleSystem in printParticles) particleSystem.Stop();
 
+            yield return new WaitForSeconds(1f);
             newPart.Materialize();
             newPart = null;
             opacity = 0f;

@@ -26,6 +26,9 @@ public class FuelPack : ShipModule {
     protected override void Awake() {
         base.Awake();
         moduleType = GameTypes.ModuleType.FuelPack;
+
+        //TODO: Remove
+        AddFuel(maxFuel);
     }
 
     public void AddFuel(float amount) {

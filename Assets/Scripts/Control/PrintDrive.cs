@@ -94,10 +94,10 @@ public class PrintDrive : MonoBehaviour, IControllable {
 
         if (power) {
             screen.enabled = true;
-            mats[3] = screenOnMaterial;
+            mats[0] = screenOnMaterial;
         } else {
             screen.enabled = false;
-            mats[3] = screenOffMaterial;
+            mats[0] = screenOffMaterial;
         }
 
         mesh.GetComponent<MeshRenderer>().materials = mats;

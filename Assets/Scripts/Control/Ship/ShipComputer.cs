@@ -23,12 +23,17 @@ public class ShipComputer : MonoBehaviour, IPowerable {
     [SerializeField] Text hoverIndicator;
     [SerializeField] Text astroIndicator;
     [SerializeField] Text quantumIndicator;
+    [SerializeField] Text countdownIndicator;
     [SerializeField] Text speedometer;
 
     Color activeColour = new Color(0f, 130f/255f, 1f, 1f);
     Color inactiveColour = new Color(120f/255f, 120f/255f, 120f/255f, 1f);
     Color throttleColour = new Color(0f, 220/255f, 0f, 1f);
     Color warningColour = new Color(1f, 0f, 0f, 1f);
+
+    void Start() {
+        UpdateCountDown(0);
+    }
 
     public void UpdateThrottleGauge(float throttle) {
         throttleGauge.fillAmount = Mathf.Abs(throttle);
@@ -50,15 +55,20 @@ public class ShipComputer : MonoBehaviour, IPowerable {
         else speedometer.color = throttleColour;
     }
 
+    public void UpdateCountDown(int time) {
+        if (time == 0) countdownIndicator.text = "";
+        else countdownIndicator.text = time.ToString();
+    }
+
     public void TogglePower(bool toggle) {
         Material[] mats = shipBodyMesh.materials;
 
         if (toggle) {
             gameObject.SetActive(true);
-            mats[4] = screenOnMaterial;
+            mats[0] = screenOnMaterial;
         } else {
             gameObject.SetActive(false);
-            mats[4] = screenOffMaterial;
+            mats[0] = screenOffMaterial;
         }
 
         shipBodyMesh.materials = mats;

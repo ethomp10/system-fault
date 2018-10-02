@@ -85,7 +85,7 @@ GameObject:
   - component: {fileID: 4186402745329792}
   - component: {fileID: 33721168221864418}
   - component: {fileID: 23955595022007740}
-  - component: {fileID: 65601768691222356}
+  - component: {fileID: 64436295296863236}
   - component: {fileID: 54072428689093998}
   - component: {fileID: 114707720406119284}
   m_Layer: 9
@@ -127,8 +127,8 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1989943118297548}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0.29145154, y: 0.7333482, z: -0.12937899, w: -0.60043114}
+  m_LocalPosition: {x: -410.53, y: -256.45, z: -129.61}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4075646364705356}
@@ -137,7 +137,7 @@ Transform:
   - {fileID: 4168722723798200}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 32.667, y: -106.955, z: -18.859001}
 --- !u!4 &4603636711092274
 Transform:
   m_ObjectHideFlags: 1
@@ -179,9 +179,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RenderingLayerMask: 4294967295
   m_Materials:
-  - {fileID: 2100000, guid: 47e76139f8a743a479871152357ad14f, type: 2}
-  - {fileID: 2100000, guid: 4060427e387578d4a9f5d6c5609c95d2, type: 2}
   - {fileID: 2100000, guid: 196ea116280e07c47af39128ebf55eed, type: 2}
+  - {fileID: 2100000, guid: 4060427e387578d4a9f5d6c5609c95d2, type: 2}
+  - {fileID: 2100000, guid: b43751fb8d810884da2bced69096bdd5, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -223,8 +223,8 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!65 &65601768691222356
-BoxCollider:
+--- !u!64 &64436295296863236
+MeshCollider:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
@@ -232,9 +232,11 @@ BoxCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 5.686521, y: 2.9030385, z: 2.0243523}
-  m_Center: {x: -0.000015248168, y: 0.15317883, z: 0.05080454}
+  serializedVersion: 3
+  m_Convex: 1
+  m_CookingOptions: 14
+  m_SkinWidth: 0.01
+  m_Mesh: {fileID: 4300012, guid: cd811a82754cafd41a44b2b626f56de0, type: 3}
 --- !u!96 &96177168064143728
 TrailRenderer:
   serializedVersion: 2

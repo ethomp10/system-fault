@@ -11,7 +11,7 @@ public class Canopy : MonoBehaviour, IUsable {
 
     [SerializeField] float speed = 3f;
 
-    bool open = false;
+    bool open;
 
     Vector3 currentPosition;
     Vector3 closedPosition;
@@ -24,12 +24,16 @@ public class Canopy : MonoBehaviour, IUsable {
     }
 
     public void Use() {
+        BoxCollider[] shipUsables = GetComponentsInParent<BoxCollider>();
+
         if (open) {
             currentPosition = closedPosition;
             open = false;
+            foreach (BoxCollider usable in shipUsables) usable.enabled = false;
         } else {
             currentPosition = openPosition;
             open = true;
+            foreach (BoxCollider usable in shipUsables) usable.enabled = true;
         }
     }
 

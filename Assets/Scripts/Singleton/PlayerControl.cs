@@ -17,6 +17,7 @@ public struct ControlObject {
     public bool run;
     public bool changeAssist;
     public bool toggleAssist;
+    public bool quantumJump;
 
     // Aiming
     public float horizontalLook;
@@ -86,6 +87,7 @@ public class PlayerControl : MonoBehaviour {
             currentInput.run = Input.GetButton("Run/Change Assist Mode");
             currentInput.changeAssist = Input.GetButtonDown("Run/Change Assist Mode");
             currentInput.toggleAssist = Input.GetButtonDown("Toggle Flight Assist");
+            currentInput.quantumJump = Input.GetButtonDown("Quantum Jump");
 
             currentInput.horizontalLook = Input.GetAxis("Horizontal Look");
             currentInput.verticalLook = Input.GetAxis("Vertical Look");

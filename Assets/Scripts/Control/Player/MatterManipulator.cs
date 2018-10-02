@@ -99,16 +99,20 @@ public class MatterManipulator : MonoBehaviour {
     }
 
     void DropObject() {
-        FindObjectOfType<Ship>().ToggleModuleSlots(false);
+        IMaterializeable mObject = heldObject.GetComponent<IMaterializeable>();
 
-        heldObject.transform.parent = null;
-        heldObject.GetComponent<IMaterializeable>().Materialize();
-        heldObject.GetComponent<Rigidbody>().velocity = GetComponentInParent<Rigidbody>().velocity;
-        heldObject = null;
+        if (!Physics.Linecast(transform.position, snapPoint.position) && !mObject.IsColliding()) {
+            FindObjectOfType<Ship>().ToggleModuleSlots(false);
 
-        PlayerHUD.instance.ToggleCrosshair(true);
-        PlayerCamera.instance.checkForUsable = true;
-        PlayerCamera.instance.checkForMaterializable = true;
+            heldObject.transform.parent = null;
+            mObject.Materialize();
+            heldObject.GetComponent<Rigidbody>().velocity = GetComponentInParent<Rigidbody>().velocity;
+            heldObject = null;
+
+            PlayerHUD.instance.ToggleCrosshair(true);
+            PlayerCamera.instance.checkForUsable = true;
+            PlayerCamera.instance.checkForMaterializable = true;
+        }
     }
 
     void GrabObject(GameObject gameObject) {
