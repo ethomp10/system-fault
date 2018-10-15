@@ -52,6 +52,7 @@ public class PlayerHUD : MonoBehaviour {
         if (!fuelPackHUD) Debug.LogError("PlayerHUD: Fuel pack HUD not set");
 
         DisableFuelPackHUD();
+        ToggleCrosshair(false);
         TogglePlanetRadar(false);
     }
 

@@ -10,16 +10,20 @@
 public class EnergyCrystal : MonoBehaviour, IDamageable {
 
     [SerializeField] GameObject shatteredCrystal;
-    float health = 10f;
+    float health = 30f;
 
-    public void Damage(float amount) {
+    public void Damage(float amount, Vector3 damageForce) {
         health -= amount;
-        if (amount >= 0) Shatter();
+        if (health <= 0) Shatter(damageForce / 3f);
     }
 
-    void Shatter() {
+    void Shatter(Vector3 shatterForce) {
         GameObject pieces = Instantiate(shatteredCrystal, transform.position, transform.rotation);
         pieces.transform.localScale = transform.localScale;
+
+        Rigidbody[] shards = pieces.GetComponentsInChildren<Rigidbody>();
+        foreach (Rigidbody shard in shards) shard.velocity = shatterForce;
+
         Destroy(gameObject);
     }
 }

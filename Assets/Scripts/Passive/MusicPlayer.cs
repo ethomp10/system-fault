@@ -29,15 +29,14 @@ public class MusicPlayer : MonoBehaviour {
 
     void OnTriggerEnter(Collider other) {
         if (other.GetComponentInChildren<Camera>()) {
-            Debug.LogWarning(other);
-            Debug.Log("Music Player: Music zone entered");
-
             if (source.isPlaying) {
                 fadeDirection = 1;
             } else {
                 source.volume = maxVolume;
                 source.Play();
             }
+
+            Debug.Log("Music Player: Music zone entered");
         }
     }
 

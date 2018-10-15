@@ -127,10 +127,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e39c301a2744fbc4f9eb6f9218b0783c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cameraMoveSpeed: 3
+  cameraMoveSpeed: 5
   shipOffset: {x: 0, y: 5, z: -25}
   usableUIPromptRange: 5
-  dematUIPromptRange: 5
+  dematUIPromptRange: 6.5
   checkForUsable: 0
   checkForMaterializable: 0
 --- !u!114 &114632792920572240

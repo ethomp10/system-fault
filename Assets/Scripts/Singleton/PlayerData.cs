@@ -11,6 +11,13 @@ public class PlayerData : MonoBehaviour {
 
     public static PlayerData instance = null;
 
+    public GameObject dematerializedShipPrefab;
+    public float shipTeleportTime = 2f;
+    [HideInInspector] public bool teleporting;
+
+    public bool hasMatterManipulator;
+    public bool hasMultiCannon;
+
     void Awake() {
         if (instance == null)
             instance = this;

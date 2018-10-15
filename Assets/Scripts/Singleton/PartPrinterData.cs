@@ -29,6 +29,16 @@ public class PartPrinterData : MonoBehaviour {
         if (!printMaterial) Debug.LogError("PartPrinterData: No print material set");
 
         DontDestroyOnLoad(gameObject);
+
+        //UnlockAllModules();
+    }
+
+    void UnlockAllModules() {
+        for (int x = 0; x < MODULE_TYPES; x++) {
+            for (int y = 0; y < MODULE_TIERS; y++) {
+                unlockedModules[x, y] = true;
+            }
+        }
     }
 
     public void UnlockModule(GameTypes.ModuleType moduleType, int tier) {

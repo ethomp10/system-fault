@@ -14,18 +14,40 @@ public static class FlockingManager {
 		return "[" + vector.x.ToString() + ", " + vector.y.ToString() + ", " + vector.z.ToString() + "]";
 	}
 
-	public static Vector3[] Headings(Vector3[] positions, Vector3[] headings, Vector3[] attractorPositions, float[] attractorScales, Vector3[] separatorPositions, float[] separatorScales, Vector3 boundingOrigin, float boundingScale, float perceptiveDistance, int flockSize, bool debug, bool debugHeading, bool debugCohesion, bool debugSeparation, bool debugAlignment, bool debugAttraction, bool debugBounding){
+	public static Vector3[] Headings(IFlocker[] boids, Vector3[] headings, Vector3[] attractorPositions, float[] attractorScales, Vector3[] separatorPositions, float[] separatorScales, Vector3 boundingOrigin, float boundingScale, float perceptiveDistance, int flockSize, bool debug, bool debugHeading, bool debugCohesion, bool debugSeparation, bool debugAlignment, bool debugAttraction, bool debugBounding){
 		List<Vector3> newHeadings = new List<Vector3>();
+		List<Vector3> positions = new List<Vector3>();
 
-		Vector3[] cohesionVectors = Cohesion(positions, perceptiveDistance, flockSize, debug && debugCohesion);
-		Vector3[] separationVectors = Separation(positions, separatorPositions, separatorScales, perceptiveDistance, debug && debugSeparation);
-		Vector3[] alignmentVectors = Alignment(positions, headings, perceptiveDistance, flockSize, debug && debugAlignment);
-		Vector3[] attractionVectors = Attraction(positions, attractorPositions, attractorScales, debug && debugAttraction);
-		Vector3[] boundingVectors = Bounding(positions, boundingOrigin, boundingScale, debug && debugBounding);
+		foreach(IFlocker boid in boids){
+			positions.Add(boid.GetPosition());
+		}
+
+		Vector3[] cohesionVectors = Cohesion(positions.ToArray(), perceptiveDistance, flockSize, debug && debugCohesion);
+		Vector3[] separationVectors = Separation(positions.ToArray(), separatorPositions, separatorScales, perceptiveDistance, debug && debugSeparation);
+		Vector3[] alignmentVectors = Alignment(positions.ToArray(), headings, perceptiveDistance, flockSize, debug && debugAlignment);
+		Vector3[] attractionVectors = Attraction(boids, positions.ToArray(), attractorPositions, attractorScales, debug && debugAttraction);
+		Vector3[] boundingVectors = Bounding(positions.ToArray(), boundingOrigin, boundingScale, debug && debugBounding);
 
 		for(int i = 0; i < cohesionVectors.Length && i < separationVectors.Length && i < alignmentVectors.Length && i < attractionVectors.Length && i < boundingVectors.Length; i++){
 			//Debug.Log("FlockingManager::Headings ~ Creating heading from cohesion vector " + Vector3ToString(cohesionVectors[i]));
-			newHeadings.Add(cohesionVectors[i] + separationVectors[i] + alignmentVectors[i] + attractionVectors[i] + boundingVectors[i]);
+			Vector3 vector = cohesionVectors[i] + separationVectors[i] + alignmentVectors[i] + attractionVectors[i] + boundingVectors[i];
+
+			if(boids[i].GetLanding()){
+				GameObject body = boids[i].GetLandingBody();
+				Vector3 vectorToBody = body.transform.position - boids[i].GetPosition();
+				Vector3 vectorToPad = boids[i].GetLandingPosition() - boids[i].GetPosition();
+
+				if(vectorToPad.magnitude * 2 < vectorToBody.magnitude && vectorToBody.magnitude < body.GetComponentInChildren<Renderer>().bounds.extents.magnitude * 2){
+					Vector3 adjustment = vectorToBody * (((body.GetComponentInChildren<Renderer>().bounds.extents.magnitude * 2 - vectorToBody.magnitude) / body.GetComponentInChildren<Renderer>().bounds.extents.magnitude) / 5) * Avoid(vectorToBody.magnitude / (body.GetComponentInChildren<Renderer>().bounds.extents.magnitude * 2));
+					// if(debug){
+					// 	Debug.DrawLine(boids[i].GetPosition(), boids[i].GetPosition() + adjustment, Color.gray);
+					// 	Debug.Log("Smooth descent");
+					// }
+					vector += adjustment;
+				}
+			}
+
+			newHeadings.Add(vector);
 		}
 
 		return newHeadings.ToArray();
@@ -82,6 +104,9 @@ public static class FlockingManager {
 		return cohesionVectors.ToArray();
 	}
 
+	private static float Avoid(float x){
+		return (1 / (Mathf.Sqrt(0.2f * Mathf.PI))) * Mathf.Exp(-Mathf.Pow(x, 2) / 0.2f);
+	}
 	private static Vector3[] Separation(Vector3[] positions, Vector3[] separatorPositions, float[] separatorScales, float perceptiveDistance, bool debug){
 		List<Vector3> separationVectors = new List<Vector3>();
 
@@ -108,7 +133,7 @@ public static class FlockingManager {
 
 					//Debug.Log("FlockingManager::Separation ~ A flock member has entered the influence of a separator");
 
-					Vector3 avoidanceVector = differenceVector.normalized * Mathf.Pow(1 + (separatorScales[j] - Mathf.Abs(differenceVector.magnitude) / separatorScales[j]), 2);
+					Vector3 avoidanceVector = differenceVector * Avoid(Mathf.Abs(differenceVector.magnitude / separatorScales[j]));//Mathf.Pow(1 + (separatorScales[j] - Mathf.Abs(differenceVector.magnitude) / separatorScales[j]), 2);
 					if(debug) Debug.DrawLine(positions[i], positions[i] - avoidanceVector, Color.magenta);
 					vector -= avoidanceVector;
 				}
@@ -149,11 +174,12 @@ public static class FlockingManager {
 		return alignmentVectors.ToArray();
 	}
 
-	private static Vector3[] Attraction(Vector3[] positions, Vector3[] attractorPositions, float[] attractorScales, bool debug){
+	private static Vector3[] Attraction(IFlocker[] boids, Vector3[] positions, Vector3[] attractorPositions, float[] attractorScales, bool debug){
 		List<Vector3> attractionVectors = new List<Vector3>();
 
 		for(int i = 0; i < positions.Length; i++){
 			Vector3 vector = Vector3.zero;
+			List<Attractor> attractors = boids[i].GetAttractors();
 
 			for(int j = 0; j < attractorPositions.Length && j < attractorScales.Length; j++){
 				Vector3 differenceVector = attractorPositions[j] - positions[i];
@@ -164,6 +190,17 @@ public static class FlockingManager {
 
 					Vector3 attractionVector = differenceVector * (attractorScales[j] - Mathf.Abs(differenceVector.magnitude)) / attractorScales[j];
 					if(debug) Debug.DrawLine(positions[i], positions[i] + attractionVector, Color.green);
+					vector += attractionVector;
+				}
+			}
+
+			for(int j = 0; j < attractors.Count; j++){
+				Vector3 differenceVector = attractors[j].go.transform.position - positions[i];
+
+				if(Mathf.Abs(differenceVector.magnitude) < attractors[j].radius){
+
+					Vector3 attractionVector = differenceVector / Mathf.Log(differenceVector.magnitude);//2 * differenceVector;//differenceVector;//.normalized * Mathf.Log(attractors[j].radius); //differenceVector * (attractors[j].radius - Mathf.Abs(differenceVector.magnitude)) / attractors[j].radius;
+					if(debug) Debug.DrawLine(positions[i], positions[i] + attractionVector, Color.cyan);
 					vector += attractionVector;
 				}
 			}

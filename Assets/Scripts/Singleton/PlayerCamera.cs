@@ -51,9 +51,12 @@ public class PlayerCamera : MonoBehaviour {
         targetingSystem = GetComponent<TargetingSystem>();
 
         checkForUsable = true;
-        checkForMaterializable = true;
 	}
-	
+
+    public RaycastHit? GetPhysicalTarget(float range) {
+        return targetingSystem.Target(range);
+    }
+
     public RaycastHit? GetUsableTarget(float range) {
         return targetingSystem.Target(range, useMask);
     }
@@ -64,11 +67,6 @@ public class PlayerCamera : MonoBehaviour {
 
     public RaycastHit? GetQuantumTarget(float range) {
         return targetingSystem.Target(range, quantumMask);
-    }
-
-    // TODO: Remove this probably
-    public RaycastHit? GetEnergyTarget(float range) {
-        return targetingSystem.Target(range, LayerMask.GetMask("Energy"));
     }
 
     void FixedUpdate() {

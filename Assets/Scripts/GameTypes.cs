@@ -21,4 +21,17 @@ public class GameTypes {
         Astro,
         Quantum
     };
+
+    public enum DamageType {
+        Pulse,
+        Gel,
+        Fire,
+        Ice
+    };
+
+    public enum PlayerWeaponType {
+        MatterManipulator,
+        MultiCannon,
+        None
+    };
 }

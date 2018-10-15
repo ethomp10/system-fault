@@ -12,7 +12,8 @@ public class AICluster : MonoBehaviour {
 
 	[SerializeField] GameObject xromShipPrefab;
 	[SerializeField] GameObject planetMesh;
-	[SerializeField] List<GameObject> xroms;
+	[SerializeField] LandingPad lp;
+	[SerializeField] List<IFlocker> xroms;
 	[SerializeField] List<GameObject> asteroids;
 	[SerializeField] float boundingRadius = 0.0f;
 	[SerializeField] bool debug;
@@ -29,7 +30,7 @@ public class AICluster : MonoBehaviour {
 	List<float> separatorScales;
 
 	void Start(){
-		xroms = new List<GameObject>();
+		xroms = new List<IFlocker>();
 		attractorPositions = new List<Vector3>();
 		attractorScales = new List<float>();
 		separatorPositions = new List<Vector3>();
@@ -55,8 +56,10 @@ public class AICluster : MonoBehaviour {
 		for(int i = 0; i  < 10; i++){
 			Vector3 position = new Vector3(Random.Range(0.0f, 1.0f), Random.Range(0.0f, 1.0f), Random.Range(0.0f, 1.0f)) * asteroids[0].transform.localScale.x;
 			position = position.normalized;
-			xroms.Add(Instantiate(xromShipPrefab, transform.position + clusterPosition + position, Quaternion.identity));
+			xroms.Add(Instantiate(xromShipPrefab, transform.position + clusterPosition + position, Quaternion.identity).GetComponent<IFlocker>());
 		}
+
+		xroms[7].Land(lp.GetComponent<LandingPad>().GetLandingPad(), lp.GetComponent<LandingPad>().GetBody());
 
 		//attractorPositions.Add(transform.position);
 		//attractorScales.Add(boundingRadius);
@@ -72,26 +75,26 @@ public class AICluster : MonoBehaviour {
 	}
 
 	void FixedUpdate(){
-		List<Vector3> positions = new List<Vector3>();
+		//List<Vector3> positions = new List<Vector3>();
 		List<Vector3> rotations = new List<Vector3>();
 		List<Vector3> velocities = new List<Vector3>();
 
 		for(int i = 0; i < xroms.Count; i++){
-			positions.Add(xroms[i].transform.position);
-			rotations.Add(xroms[i].transform.rotation.eulerAngles);
-			velocities.Add(xroms[i].transform.GetComponent<Rigidbody>().velocity);
+			//positions.Add(xroms[i].transform.position);
+			rotations.Add(xroms[i].GetRotation());
+			velocities.Add(xroms[i].GetVelocity());
 		}
 
-		Vector3[] headings = FlockingManager.Headings(positions.ToArray(), velocities.ToArray(), attractorPositions.ToArray(), attractorScales.ToArray(), separatorPositions.ToArray(), separatorScales.ToArray(), transform.position, boundingRadius, 50.0f, 4, debug, debugHeading, debugCohesion, debugSeparation, debugAlignment, debugAttraction, debugBounding);
+		Vector3[] headings = FlockingManager.Headings(xroms.ToArray(), velocities.ToArray(), attractorPositions.ToArray(), attractorScales.ToArray(), separatorPositions.ToArray(), separatorScales.ToArray(), transform.position, boundingRadius, 50.0f, 4, debug, debugHeading, debugCohesion, debugSeparation, debugAlignment, debugAttraction, debugBounding);
 	
 		for(int i = 0; i < xroms.Count && i < headings.Length; i++){
-			xroms[i].GetComponent<Xrom>().Move(headings[i], debug && debugHeading);
+			xroms[i].Move(headings[i], debug && debugHeading);
 		}
 
 		Vector3 avgRotation = FlockingManager.Rotation(rotations.ToArray());
 
-		foreach(GameObject xrom in xroms){
-			xrom.GetComponent<Xrom>().Rotate(avgRotation);
+		foreach(IFlocker xrom in xroms){
+			xrom.Rotate(avgRotation);
 		}
 	}
 }

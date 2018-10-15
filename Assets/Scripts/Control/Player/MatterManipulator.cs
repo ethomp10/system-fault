@@ -7,22 +7,20 @@
 // Purpose: Picks up materializable objects, and connects ship modules
 //
 
-public class MatterManipulator : MonoBehaviour {
+public class MatterManipulator : MonoBehaviour, IWeapon {
 
     [SerializeField] float dematRange = 5f;
     [SerializeField] float snapSpeed = 5f;
     [SerializeField] Material dematMaterial;
+    [SerializeField] ParticleSystem energyParticles;
 
     [SerializeField] Transform snapPoint;
     GameObject heldObject;
 
-    ModuleSlot assignedSlot = null;
-
-    public bool equipped = true;
+    ModuleSlot assignedSlot;
 
 	void Start () {
         if (snapPoint == null) Debug.LogError("MatterManipulator: No snap point set");
-
 		if (dematMaterial == null) Debug.LogError("MatterManipulator: No demat material set");
 	}
 
@@ -84,6 +82,8 @@ public class MatterManipulator : MonoBehaviour {
         PlayerHUD.instance.ToggleCrosshair(true);
         PlayerCamera.instance.checkForUsable = true;
         PlayerCamera.instance.checkForMaterializable = true;
+
+        energyParticles.Stop();
     }
 
     void DisconnectModule(ModuleSlot slot) {
@@ -112,6 +112,8 @@ public class MatterManipulator : MonoBehaviour {
             PlayerHUD.instance.ToggleCrosshair(true);
             PlayerCamera.instance.checkForUsable = true;
             PlayerCamera.instance.checkForMaterializable = true;
+
+            energyParticles.Stop();
         }
     }
 
@@ -139,6 +141,8 @@ public class MatterManipulator : MonoBehaviour {
         PlayerHUD.instance.ToggleDematPrompt(false);
         PlayerCamera.instance.checkForUsable = false;
         PlayerCamera.instance.checkForMaterializable = false;
+
+        energyParticles.Play();
     }
 
     void FixedUpdate() {
@@ -154,6 +158,6 @@ public class MatterManipulator : MonoBehaviour {
 
     public bool IsHoldingObject() {
         if (heldObject) return true;
-        else return false;
+        return false;
     }
 }

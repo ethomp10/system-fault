@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections;
 
 //
 // Player.cs
@@ -34,9 +35,10 @@ public class Player : MonoBehaviour, IControllable, IGroundable, IDamageable {
     [SerializeField] float useRange = 5f;
 
     ModuleSlot fuelSlot;
+    WeaponSlot weaponSlot;
 
-    bool grounded = false;
-    bool snapping = false;
+    bool grounded;
+    bool snapping;
     float yAngle;
 
     Rigidbody rb;
@@ -45,15 +47,24 @@ public class Player : MonoBehaviour, IControllable, IGroundable, IDamageable {
 
     [HideInInspector] public Ship ship;
 
+    bool canEquip = false;
+
     void Awake() {
         health = maxHealth;
 
         rb = GetComponent<Rigidbody>();
+
         fuelSlot = GetComponentInChildren<ModuleSlot>();
         if (fuelSlot == null || fuelSlot.slotType != GameTypes.ModuleType.FuelPack) Debug.LogError("Player: No fuel slot set as child");
+
+        weaponSlot = GetComponentInChildren<WeaponSlot>();
+        if (weaponSlot == null) Debug.LogError("Player: No weapon slot set as child");
+
         if (cameraRig == null)  Debug.LogError("Player: No camera rig set in inspector");
 
         PlayerControl.instance.TakeControl(this);
+
+        StartCoroutine("WeaponTimer");
     }
 
     void FixedUpdate() {
@@ -93,32 +104,29 @@ public class Player : MonoBehaviour, IControllable, IGroundable, IDamageable {
 
         // Interact
         if (controlObject.interact) {
-            RaycastHit? hit;
-
-            // TODO: Get rid of this
-            hit = GetComponentInChildren<PlayerCamera>().GetEnergyTarget(100f);
-            if (hit != null && !hit.Value.collider.CompareTag("Player") && hit.Value.collider.GetComponent<IDamageable>() != null) {
-                hit.Value.collider.GetComponent<IDamageable>().Damage(10f);
-            }
-            ////////////////////////
-
-            hit = GetComponentInChildren<PlayerCamera>().GetUsableTarget(useRange);
+            RaycastHit? hit = GetComponentInChildren<PlayerCamera>().GetUsableTarget(useRange);
             if (hit != null && PlayerCamera.instance.checkForUsable) hit.Value.collider.GetComponent<IUsable>().Use();
         }
 
         // Shield Cells
         if (controlObject.chargeShieldCell && fuelSlot.connectedModule) fuelSlot.connectedModule.GetComponent<FuelPack>().ChargeShields();
 
-        if (controlObject.fire) {
-            MatterManipulator matterManipulator = GetComponentInChildren<MatterManipulator>();
-            if (matterManipulator.equipped) {
-                matterManipulator.Fire();
-            }
+        // Weapons
+        if (controlObject.fire && weaponSlot.currentWeapon != null) {
+            weaponSlot.currentWeapon.Fire();
+        }
+        if (controlObject.aim && weaponSlot.GetCurrentWeaponType() == GameTypes.PlayerWeaponType.MatterManipulator) {
+            weaponSlot.GetComponentInChildren<MatterManipulator>().EquipFuelPack(fuelSlot);
+        }
+        if (controlObject.matterManipilator) {
+            if ((weaponSlot.GetCurrentWeaponType() == GameTypes.PlayerWeaponType.MatterManipulator && !GetComponentInChildren<MatterManipulator>().IsHoldingObject())
+            || weaponSlot.GetCurrentWeaponType() != GameTypes.PlayerWeaponType.MatterManipulator
+            && canEquip)
+                weaponSlot.SwitchWeapons();
         }
 
-        if (controlObject.aim) { 
-            GetComponentInChildren<MatterManipulator>().EquipFuelPack(fuelSlot);
-        }
+        // TODO: REMOVE
+        if (Input.GetKeyDown(KeyCode.L) && fuelSlot.connectedModule) GetComponentInChildren<FuelPack>().AddFuel(500f);
     }
 
     public void ResetPlayer(Transform location) {
@@ -173,12 +181,10 @@ public class Player : MonoBehaviour, IControllable, IGroundable, IDamageable {
 
     public void SetCam(PlayerCamera controlCam) {
         controlCam.transform.SetParent(cameraRig);
-
-        controlCam.checkForMaterializable = true;
         controlCam.checkForUsable = true;
     }
 
-    public void Damage(float amount) {
+    public void Damage(float amount, Vector3 damageForce) {
         // Check if player has shields
         if (fuelSlot.connectedModule != null) {
             amount = fuelSlot.connectedModule.GetComponent<FuelPack>().AbsorbDamage(amount);
@@ -189,5 +195,12 @@ public class Player : MonoBehaviour, IControllable, IGroundable, IDamageable {
             PlayerControl.instance.RemoveControl();
             Debug.LogWarning("Player: DEAD!");
         }
+    }
+
+    IEnumerator WeaponTimer() {
+        yield return new WaitForSeconds(0.5f);
+
+        weaponSlot.SwitchWeapons();
+        canEquip = true;
     }
 }

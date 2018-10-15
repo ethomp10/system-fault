@@ -26,11 +26,11 @@ public interface ICollectable {
 }
 
 public interface IDamageable {
-    void Damage(float amount);
+    void Damage(float amount, Vector3 damageForce);
 }
 
 public interface IWeapon {
-    void Fire(Transform firePoint = null);
+    void Fire();
 }
 
 public interface IControllable {

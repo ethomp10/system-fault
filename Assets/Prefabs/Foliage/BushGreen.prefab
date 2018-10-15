@@ -20,9 +20,9 @@ GameObject:
   m_Component:
   - component: {fileID: 4287945313415582}
   - component: {fileID: 205405866627802688}
-  - component: {fileID: 135793379049106100}
   - component: {fileID: 114086858436505926}
   - component: {fileID: 114380624916416344}
+  - component: {fileID: 135262852283019080}
   m_Layer: 10
   m_Name: BushGreen
   m_TagString: Untagged
@@ -138,7 +138,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96cedbdd6da6c0f40912e2330319413d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!135 &135793379049106100
+--- !u!135 &135262852283019080
 SphereCollider:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}

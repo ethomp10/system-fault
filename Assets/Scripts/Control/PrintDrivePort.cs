@@ -5,7 +5,7 @@ using System.Collections;
 // PrintDrivePort.cs
 //
 // Author: Eric Thompson (Dead Battery Games)
-// Purpose: Gives player access to the part printer
+// Purpose: Allows player to unlock blueprints & control part printers
 //
 
 public class PrintDrivePort : MonoBehaviour, IUsable {
@@ -32,6 +32,7 @@ public class PrintDrivePort : MonoBehaviour, IUsable {
             printDrive = Instantiate(PartPrinterData.instance.printDrivePrefab, transform.position + transform.up / 2f, transform.rotation, transform).GetComponent<PrintDrive>();
             printDrive.AssignPort(this);
 
+            if (!blueprint) FindObjectOfType<WeaponSlot>().UnequipAll();
             desiredLocation = Vector3.zero;
         }
     }
@@ -49,7 +50,7 @@ public class PrintDrivePort : MonoBehaviour, IUsable {
                     gameObject.layer = LayerMask.GetMask("Default");
                     Destroy(blueprint);
                     Destroy(this);
-                }
+                } else FindObjectOfType<WeaponSlot>().SwitchWeapons();
             }
         }
     }
@@ -61,21 +62,17 @@ public class PrintDrivePort : MonoBehaviour, IUsable {
             blueprint.Unlock(printDrive);
             StartCoroutine("BlueprintTimer");
         } else {
-            PlayerHUD.instance.ToggleCrosshair(false);
             PlayerHUD.instance.ToggleShipRadar(false);
             PlayerHUD.instance.ToggleUsePrompt(false);
-            PlayerHUD.instance.ToggleDematPrompt(false);
-
-            PlayerCamera.instance.checkForUsable = false;
-            PlayerCamera.instance.checkForMaterializable = false;
 
             PlayerControl.instance.TakeControl(printDrive.GetComponent<IControllable>());
 
             Player currentPlayer = FindObjectOfType<Player>();
-            currentPlayer.ResetPlayer(playerReset);
             if (currentPlayer.GetComponentInChildren<ModuleSlot>().connectedModule) {
                 currentPlayer.GetComponentInChildren<FuelPack>().ShowPack(false);
             }
+            currentPlayer.ResetPlayer(playerReset);
+
         }
 
         driveConnected = true;
@@ -91,12 +88,9 @@ public class PrintDrivePort : MonoBehaviour, IUsable {
         printDrive.PowerScreen(false);
 
         PlayerControl.instance.TakeControl(currentPlayer);
-
-        PlayerHUD.instance.ToggleCrosshair(true);
-        PlayerHUD.instance.ToggleShipRadar(true);
-
         PlayerCamera.instance.checkForUsable = true;
-        PlayerCamera.instance.checkForMaterializable = true;
+
+        PlayerHUD.instance.ToggleShipRadar(true);
     }
 
     public void SendPrintSignal(Vector2Int index) {
@@ -109,7 +103,7 @@ public class PrintDrivePort : MonoBehaviour, IUsable {
         // Remove drive
         RemovePrintDrive();
 
-        // Disable print drive
+        // Disable print drive port
         MeshRenderer meshRenderer = GetComponentInChildren<MeshRenderer>();
         Material[] mats = meshRenderer.materials;
         mats[0] = disabledMaterial;

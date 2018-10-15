@@ -27,8 +27,7 @@ public class FuelPack : ShipModule {
         base.Awake();
         moduleType = GameTypes.ModuleType.FuelPack;
 
-        //TODO: Remove
-        AddFuel(maxFuel);
+        //AddFuel(maxFuel);
     }
 
     public void AddFuel(float amount) {
@@ -92,6 +91,10 @@ public class FuelPack : ShipModule {
 
     public void UpdateFuelGauge() {
         fuelGuage.fillAmount = fuel / maxFuel;
+    }
+
+    public float GetFuel() {
+        return fuel;
     }
 
     public float GetFuelPercentage() {

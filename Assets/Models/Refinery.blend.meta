@@ -9,12 +9,14 @@ ModelImporter:
     100006: Ship
     100008: Refinery
     100010: Building
+    100012: Lanterns
     400000: LandingPad
     400002: PartPrinter
     400004: //RootNode
     400006: Ship
     400008: Refinery
     400010: Building
+    400012: Lanterns
     2100000: Rubber
     2100002: Metal
     2100004: Screen
@@ -25,15 +27,18 @@ ModelImporter:
     2300002: PartPrinter
     2300004: Refinery
     2300006: Building
+    2300008: Lanterns
     3300000: LandingPad
     3300002: PartPrinter
     3300004: Refinery
     3300006: Building
+    3300008: Lanterns
     4300000: PartPrinter
     4300002: LandingPad
     4300004: Ship
     4300006: Refinery
     4300008: Building
+    4300010: Lanterns
     7400000: Default Take
     9500000: //RootNode
     13700000: Ship

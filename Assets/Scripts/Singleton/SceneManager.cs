@@ -81,7 +81,7 @@ public class SceneManager : MonoBehaviour {
     // TODO: Remove
     public void Update() {
         if (Input.GetKeyDown(KeyCode.P)) {
-            FindObjectOfType<Player>().Damage(21.276f);
+            FindObjectOfType<Player>().Damage(21.276f, Vector3.zero);
         }
     }
 

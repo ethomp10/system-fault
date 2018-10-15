@@ -17,7 +17,7 @@ public class PartPrinter : MonoBehaviour {
 
     ShipModule newPart = null;
     bool printSurfaceClear = true;
-    float opacity = 0f;
+    float partOpacity = 0f;
 
     private void Start() {
         if (!printPoint) Debug.LogError("PartPrinter: No print point set");
@@ -27,10 +27,14 @@ public class PartPrinter : MonoBehaviour {
     void Update () {
         // TODO: This should probably be in a shader
         if (newPart) {
-            opacity += Time.deltaTime / PartPrinterData.instance.printTime;
-            foreach (Material mat in meshRenderer.materials) {
-                mat.color = new Color(mat.color.r, mat.color.g, mat.color.b, opacity);
-            }
+            partOpacity += Time.deltaTime / PartPrinterData.instance.printTime;
+            SetPartOpacity(partOpacity);
+        }
+    }
+
+    void SetPartOpacity(float opacity) {
+        foreach (Material mat in meshRenderer.materials) {
+            mat.color = new Color(mat.color.r, mat.color.g, mat.color.b, opacity);
         }
     }
 
@@ -41,7 +45,21 @@ public class PartPrinter : MonoBehaviour {
         else prefabIndex = 9;
 
         Debug.Log("PartPrinter: Print request for index " + index + " / " + prefabIndex);
-        StartCoroutine(PrintPart(PartPrinterData.instance.modulePrefabs[prefabIndex]));
+
+        float printCost = PartPrinterData.instance.printCosts[prefabIndex];
+
+        if (printSurfaceClear) {
+            if (printCost > 0f) {
+                Player player = FindObjectOfType<Player>();
+                if (player.GetComponentInChildren<ModuleSlot>().connectedModule) {
+                    FuelPack fuelPack = player.GetComponentInChildren<FuelPack>();
+                    if (fuelPack.GetFuel() >= printCost) {
+                        fuelPack.DrainFuel(printCost);
+                        StartCoroutine(PrintPart(PartPrinterData.instance.modulePrefabs[prefabIndex]));
+                    } else Debug.LogWarning("PartPrinter: Not enough energy");
+                } else Debug.LogWarning("PartPrinter: Not wearing Fuel Pack");
+            } else StartCoroutine(PrintPart(PartPrinterData.instance.modulePrefabs[prefabIndex]));
+        } else Debug.LogWarning("PartPrinter: Print surface obstructed");
     }
 
     void OnTriggerStay(Collider other) {
@@ -53,27 +71,21 @@ public class PartPrinter : MonoBehaviour {
     }
 
     IEnumerator PrintPart(GameObject shipModule) {
-        if (printSurfaceClear) {
-            foreach (ParticleSystem particleSystem in printParticles) particleSystem.Play();
+        foreach (ParticleSystem particleSystem in printParticles) particleSystem.Play();
+        yield return new WaitForSeconds(0.2f);
 
-            yield return new WaitForSeconds(0.75f);
-            newPart = Instantiate(shipModule, printPoint.position, printPoint.rotation).GetComponent<ShipModule>();
-            SceneManager.instance.AddGravityBody(newPart.GetComponent<Rigidbody>());
-            newPart.Dematerialize(PartPrinterData.instance.printMaterial);
-            meshRenderer = newPart.GetComponent<MeshRenderer>();
-            foreach (Material mat in meshRenderer.materials) {
-                mat.color = new Color(mat.color.r, mat.color.g, mat.color.b, opacity);
-            }
+        newPart = Instantiate(shipModule, printPoint.position, printPoint.rotation).GetComponent<ShipModule>();
+        SceneManager.instance.AddGravityBody(newPart.GetComponent<Rigidbody>());
+        newPart.Dematerialize(PartPrinterData.instance.printMaterial);
+        meshRenderer = newPart.GetComponent<MeshRenderer>();
+        SetPartOpacity(partOpacity);
+        yield return new WaitForSeconds(PartPrinterData.instance.printTime);
 
-            yield return new WaitForSeconds(PartPrinterData.instance.printTime);
-            foreach (ParticleSystem particleSystem in printParticles) particleSystem.Stop();
+        foreach (ParticleSystem particleSystem in printParticles) particleSystem.Stop();
+        yield return new WaitForSeconds(0.2f);
 
-            yield return new WaitForSeconds(1f);
-            newPart.Materialize();
-            newPart = null;
-            opacity = 0f;
-        } else {
-            Debug.LogWarning("PartPrinter: Please clear print surface and try again");
-        }
+        newPart.Materialize();
+        newPart = null;
+        partOpacity = 0f;
     }
 }
